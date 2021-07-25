@@ -1,0 +1,178 @@
+﻿@page "/doctors/profile/{id}"
+@inject HttpClient httpClient
+@inject NavigationManager navigationManager
+
+<MudGrid>
+    <MudItem xs="12">
+        <DoctorProfileComponent Doctor="this.doctor"></DoctorProfileComponent>
+    </MudItem>
+    <MudItem xs="12">
+        <MudTabs Elevation="1" Color="Color.Success" Rounded="true" PanelClass="pa-6">
+            <MudTabPanel Text="Treatments" ToolTip="ToolTip Treatments">
+                <MudTable Items="@this.treatments" Dense="@dense" Hover="@hover" Bordered="@bordered" Striped="@striped" Filter="new Func<AllTreatmentsByUserIdViewModel,bool>(FilterFuncTreatments)" @bind-SelectedItem="selectedTreatment" HeaderClass="table-head-bordered">
+                    <ToolBarContent>
+                        <MudText Typo="Typo.h6">Treatments</MudText>
+                        <MudSpacer />
+                        <MudTextField @bind-Value="searchStringTreatments" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="MudBlazor.Size.Medium" Class="mt-0"></MudTextField>
+                    </ToolBarContent>
+                    <HeaderContent>
+                        <MudTh>
+                            <MudTableSortLabel SortBy="new Func<AllTreatmentsByUserIdViewModel, object>(x=>x.Id)">T_ID</MudTableSortLabel>
+                        </MudTh>
+                        <MudTh>
+                            <MudTableSortLabel SortBy="new Func<AllTreatmentsByUserIdViewModel, object>(x=>x.Patient)">Patient</MudTableSortLabel>
+                        </MudTh>
+                        <MudTh>
+                            <MudTableSortLabel SortBy="new Func<AllTreatmentsByUserIdViewModel, object>(x=>x.Diagnose)">Diagnose</MudTableSortLabel>
+                        </MudTh>
+                        <MudTh>
+                            <MudTableSortLabel SortBy="new Func<AllTreatmentsByUserIdViewModel, object>(x=>x.Treatment)">Treatment</MudTableSortLabel>
+                        </MudTh>
+                        <MudTh>
+                            <MudTableSortLabel SortBy="new Func<AllTreatmentsByUserIdViewModel, object>(x=>x.Date)">Date</MudTableSortLabel>
+                        </MudTh>
+                        <MudTh>Options</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="T_ID">@context.Id</MudTd>
+                        <MudTd DataLabel="Patient">@context.Patient</MudTd>
+                        <MudTd DataLabel="Diagnose">@context.Diagnose</MudTd>
+                        <MudTd DataLabel="Treatment">@context.Treatment</MudTd>
+                        <MudTd DataLabel="Date">@context.Date.ToString("yyyy-MM-dd")</MudTd>
+                        <MudTd>
+                            <MudButton @onclick="() => this.NavigateToTreatmentDetails(context.Id)" Variant="Variant.Filled">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                                    <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z" />
+                                    <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z" />
+                                </svg>
+                                View
+                            </MudButton>
+                        </MudTd>
+                    </RowTemplate>
+                    <PagerContent>
+                        <MudTablePager />
+                    </PagerContent>
+                </MudTable>
+            </MudTabPanel>
+            <MudTabPanel Text="Recipes" ToolTip="ToolTip Recipes">
+                <MudTable Items="@this.recipes" Dense="@dense" Hover="@hover" Bordered="@bordered" Striped="@striped" Filter="new Func<AllRecipesByUserIdViewModel,bool>(FilterFuncRecipes)" @bind-SelectedItem="selectedRecipe" HeaderClass="table-head-bordered">
+                    <ToolBarContent>
+                        <MudText Typo="Typo.h6">Recipes</MudText>
+                        <MudSpacer />
+                        <MudTextField @bind-Value="searchStringRecipes" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                    </ToolBarContent>
+                    <HeaderContent>
+                        <MudTh>
+                            <MudTableSortLabel SortBy="new Func<AllRecipesByUserIdViewModel, object>(x=>x.Id)">R_ID</MudTableSortLabel>
+                        </MudTh>
+                        <MudTh>
+                            <MudTableSortLabel SortBy="new Func<AllRecipesByUserIdViewModel, object>(x=>x.Doctor)">Doctor</MudTableSortLabel>
+                        </MudTh>
+                        <MudTh>
+                            <MudTableSortLabel SortBy="new Func<AllRecipesByUserIdViewModel, object>(x=>x.Description)">Description</MudTableSortLabel>
+                        </MudTh>
+                        <MudTh>
+                            <MudTableSortLabel SortBy="new Func<AllRecipesByUserIdViewModel, object>(x=>x.OtherInfo)">Other Informations</MudTableSortLabel>
+                        </MudTh>
+                        <MudTh>
+                            <MudTableSortLabel SortBy="new Func<AllRecipesByUserIdViewModel, object>(x=>x.Date)">Date</MudTableSortLabel>
+                        </MudTh>
+                        <MudTh>Options</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="R_ID">@context.Id</MudTd>
+                        <MudTd DataLabel="Doctor">@context.Doctor</MudTd>
+                        <MudTd DataLabel="Description">@context.Description</MudTd>
+                        <MudTd DataLabel="Other Informations">@context.OtherInfo</MudTd>
+                        <MudTd DataLabel="Date">@context.Date.ToString("yyyy-MM-dd")</MudTd>
+                        <MudTd>
+                            <MudButton @onclick="() => this.NavigateToRecipeDetails(context.Id)" Variant="Variant.Filled">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                                    <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z" />
+                                    <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z" />
+                                </svg>
+                                View
+                            </MudButton>
+                        </MudTd>
+                    </RowTemplate>
+                    <PagerContent>
+                        <MudTablePager />
+                    </PagerContent>
+                </MudTable>
+            </MudTabPanel>
+        </MudTabs>
+    </MudItem>
+</MudGrid>
+
+@code {
+    private bool dense = false;
+    private bool hover = true;
+    private bool striped = true;
+    private bool bordered = true;
+
+    private string searchStringTreatments = "";
+    private string searchStringRecipes = "";
+
+    private AllTreatmentsByUserIdViewModel selectedTreatment = null;
+    private HashSet<AllTreatmentsByUserIdViewModel> selectedTreatments = new HashSet<AllTreatmentsByUserIdViewModel>();
+    private AllRecipesByUserIdViewModel selectedRecipe = null;
+    private HashSet<AllRecipesByUserIdViewModel> selectedRecipes = new HashSet<AllRecipesByUserIdViewModel>();
+
+    private IEnumerable<AllTreatmentsByUserIdViewModel> treatments = new List<AllTreatmentsByUserIdViewModel>();
+    private IEnumerable<AllRecipesByUserIdViewModel> recipes = new List<AllRecipesByUserIdViewModel>();
+    private DoctorByIdViewModel doctor = new DoctorByIdViewModel();
+
+    protected override async Task OnInitializedAsync()
+    {
+        this.treatments = await this.httpClient.GetFromJsonAsync<IEnumerable<AllTreatmentsByUserIdViewModel>>($"Treatments/AllByDoctorId/{this.Id}");
+        this.recipes = await this.httpClient.GetFromJsonAsync<IEnumerable<AllRecipesByUserIdViewModel>>($"Recipes/AllByDoctorId/{this.Id}");
+        this.doctor = await this.httpClient.GetFromJsonAsync<DoctorByIdViewModel>($"Users/GetDoctorById/{this.Id}");
+    }
+
+    private bool FilterFuncTreatments(AllTreatmentsByUserIdViewModel treatment)
+    {
+        if (string.IsNullOrWhiteSpace(searchStringTreatments))
+            return true;
+        if (treatment.Id.ToString().Contains(searchStringTreatments, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (treatment.Patient.Contains(searchStringTreatments, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (treatment.Diagnose.Contains(searchStringTreatments, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (treatment.Treatment.Contains(searchStringTreatments, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (treatment.Date.ToString("yyyy-MM-dd").Contains(searchStringTreatments, StringComparison.OrdinalIgnoreCase))
+            return true;
+        return false;
+    }
+
+    private bool FilterFuncRecipes(AllRecipesByUserIdViewModel recipe)
+    {
+        if (string.IsNullOrWhiteSpace(searchStringRecipes))
+            return true;
+        if (recipe.Id.ToString().Contains(searchStringRecipes, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (recipe.Doctor.Contains(searchStringRecipes, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (recipe.Description.Contains(searchStringRecipes, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (recipe.OtherInfo.Contains(searchStringRecipes, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (recipe.Date.ToString("yyyy-MM-dd").Contains(searchStringRecipes, StringComparison.OrdinalIgnoreCase))
+            return true;
+        return false;
+    }
+
+    void NavigateToTreatmentDetails(int id)
+    {
+        this.navigationManager.NavigateTo($"/treatments/details/{id}");
+    }
+
+    void NavigateToRecipeDetails(int id)
+    {
+        this.navigationManager.NavigateTo($"/recipes/details/{id}");
+    }
+
+    [Parameter]
+    public string Id { get; set; }
+}

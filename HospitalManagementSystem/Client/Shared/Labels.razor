@@ -1,0 +1,72 @@
+﻿<MudExpansionPanels>
+    <MudExpansionPanel Dense="true" Text="Labels" IsExpanded="isExpanded" IsExpandedChanged="this.Expand">
+        <MudDivider />
+        <MudList Clickable="true">
+
+            <MudListItem>
+                <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-dot text-primary" viewBox="0 0 16 16">
+                    <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z" />
+                </svg>
+                Admin
+            </MudListItem>
+            <MudDivider />
+            <MudListItem>
+                <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-dot text-secondary" viewBox="0 0 16 16">
+                    <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z" />
+                </svg>
+                Doctors
+            </MudListItem>
+            <MudDivider />
+            <MudListItem>
+                <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-dot text-success" viewBox="0 0 16 16">
+                    <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z" />
+                </svg>
+                Nurses
+            </MudListItem>
+            <MudDivider />
+            <MudListItem>
+                <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-dot text-danger" viewBox="0 0 16 16">
+                    <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z" />
+                </svg>
+                Patients
+            </MudListItem>
+            <MudDivider />
+            <MudListItem>
+                <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-dot text-warning" viewBox="0 0 16 16">
+                    <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z" />
+                </svg>
+                Laboratorists
+            </MudListItem>
+            <MudDivider />
+            <MudListItem>
+                <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-dot text-info" viewBox="0 0 16 16">
+                    <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z" />
+                </svg>
+                Pharmacists
+            </MudListItem>
+            <MudDivider />
+            <MudListItem>
+                <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-dot text-light" viewBox="0 0 16 16">
+                    <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z" />
+                </svg>
+                Accountants
+            </MudListItem>
+            <MudDivider />
+            <MudListItem>
+                <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-dot text-dark" viewBox="0 0 16 16">
+                    <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z" />
+                </svg>
+                Receptionists
+            </MudListItem>
+        </MudList>
+    </MudExpansionPanel>
+</MudExpansionPanels>
+
+@code {
+    private bool isExpanded = true;
+
+    private void Expand()
+    {
+        this.isExpanded = !this.isExpanded;
+    }
+}  

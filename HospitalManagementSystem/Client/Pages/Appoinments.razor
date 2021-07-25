@@ -1,0 +1,46 @@
+﻿@page "/appointments"
+@inject Radzen.DialogService dialogService
+
+<MudGrid>
+    <MudItem xs="12">
+        <h2>Appointments <strong class="text-black-50" style="font-size: 16px;">LEGEND</strong></h2>
+    </MudItem>
+    <MudItem Class="bg-primary" xs="2">Finished</MudItem>
+    <MudItem Class="bg-success" xs="2">In Progress</MudItem>
+    <MudItem Class="bg-danger" xs="2">Waiting</MudItem>
+    <MudItem Class="bg-warning" xs="2">Cancelled</MudItem>
+    <MudItem xs="4"></MudItem>
+    <MudItem xs="12">
+        <RadzenScheduler TItem="AllAppointmentsByPatientIdViewModel" Data=@appointments StartProperty="StartDate" EndProperty="EndDate"
+                         TextProperty="Title" SelectedIndex="2"
+                         SlotSelect=@OnSlotSelect AppointmentSelect=@OnAppointmentSelect AppointmentRender=@OnAppointmentRender style="height: 768px;">
+            <RadzenDayView />
+            <RadzenWeekView />
+            <RadzenMonthView />
+        </RadzenScheduler>
+    </MudItem>
+</MudGrid>
+
+@code {
+    RadzenScheduler<AllAppointmentsByPatientIdViewModel> scheduler;
+
+    IList<AllAppointmentsByPatientIdViewModel> appointments = new List<AllAppointmentsByPatientIdViewModel>
+    {
+        new AllAppointmentsByPatientIdViewModel { StartDate = DateTime.Today.AddDays(-2), EndDate = DateTime.Today.AddDays(-2), Title = "Title" },
+    };
+
+    async Task OnSlotSelect(SchedulerSlotSelectEventArgs args)
+    {
+        
+    }
+
+    async Task OnAppointmentSelect(SchedulerAppointmentSelectEventArgs<AllAppointmentsByPatientIdViewModel> args)
+    {
+
+    }
+
+    void OnAppointmentRender(SchedulerAppointmentRenderEventArgs<AllAppointmentsByPatientIdViewModel> args)
+    {
+
+    }
+}

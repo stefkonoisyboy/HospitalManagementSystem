@@ -1,0 +1,14 @@
+﻿@inject NavigationManager navigationManager
+
+<h2>Mailbox @this.Location</h2>
+<MudButton Style="width: 270px;" OnClick="this.NavigateToCompose" Variant="Variant.Filled" Color="Color.Primary">Compose</MudButton>
+
+@code {
+    private void NavigateToCompose()
+    {
+        this.navigationManager.NavigateTo("/mailbox/compose");
+    }
+
+    [Parameter]
+    public string Location { get; set; }
+} 

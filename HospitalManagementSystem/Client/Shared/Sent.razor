@@ -1,0 +1,128 @@
+﻿@inject HttpClient httpClient
+@inject NavigationManager navigationManager
+
+<style>
+    .hr {
+        height: 5px;
+        background-image: -webkit-linear-gradient(left, rgba(66,133,244,.8), rgba(66, 133, 244,.6), rgba(0,0,0,0));
+        position: relative;
+        top: 20px;
+        width: 870px;
+    }
+</style>
+
+<hr class="hr" />
+@if (this.AllMessagesByUserIdViewModels.Count() == 0)
+{
+    <table class="table table-striped table-hover" style="width: 865px;">
+        <tr>
+            <td class="text-center">No data available in table</td>
+        </tr>
+    </table>
+}
+else
+{
+<MudTable Items="@AllMessagesByUserIdViewModels" MultiSelection="true" CustomHeader="true" Dense="@dense" Hover="@hover" Bordered="@bordered" Striped="@striped" Filter="new Func<AllMessagesByUserIdViewModel,bool>(FilterFunc)" @bind-SelectedItems="selectedItems">
+    <HeaderContent>
+        <MudGrid>
+            <MudItem xs="2">
+                <MudTHeadRow IsCheckable="true">
+
+                </MudTHeadRow>
+            </MudItem>
+            <MudItem xs="1">
+                <MudButton OnClick="this.Delete" Disabled="this.selectedItems.Count() == 0" Style="position: relative; left: 40px; top: 5px;" Variant="Variant.Filled" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Delete"></MudButton>
+            </MudItem>
+        </MudGrid>
+    </HeaderContent>
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Sent</MudText>
+        <MudSpacer />
+        <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <RowTemplate>
+        <MudTd DataLabel="Label">
+            <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-dot @context.CreatorLabelClass" viewBox="0 0 16 16">
+                <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z" />
+            </svg>
+        </MudTd>
+        <MudTd DataLabel="Creator">
+            <a href="/mailbox/sent/messages/@context.Id">@context.Creator</a>
+        </MudTd>
+        <MudTd DataLabel="SubjectContent">
+            <p>
+                <strong>@context.Subject - </strong>
+                @context.Content
+            </p>
+        </MudTd>
+        <MudTd DataLabel="Difference">@context.DifferenceBetweenNowAndCreatedOn</MudTd>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>
+}
+
+@code {
+    private bool dense = true;
+    private bool hover = true;
+    private bool striped = true;
+    private bool bordered = false;
+    private string searchString = "";
+    private AllMessagesByUserIdViewModel selectedItem = null;
+    private HashSet<AllMessagesByUserIdViewModel> selectedItems = new HashSet<AllMessagesByUserIdViewModel>();
+
+    public IEnumerable<AllMessagesByUserIdViewModel> AllMessagesByUserIdViewModels = new List<AllMessagesByUserIdViewModel>();
+
+    private int code;
+
+    protected override async Task OnInitializedAsync()
+    {
+        this.AllMessagesByUserIdViewModels = await this.httpClient.GetFromJsonAsync<IEnumerable<AllMessagesByUserIdViewModel>>("Messages/GetAllByCreatorId");
+    }
+
+    private bool FilterFunc(AllMessagesByUserIdViewModel AllMessagesByUserIdViewModel)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (AllMessagesByUserIdViewModel.Creator.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (AllMessagesByUserIdViewModel.Subject.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (AllMessagesByUserIdViewModel.Content.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (AllMessagesByUserIdViewModel.DifferenceBetweenNowAndCreatedOn.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        return false;
+    }
+
+    public async Task Delete()
+    {
+        int[] ids = this.selectedItems.Select(s => s.Id).ToArray();
+        string query = string.Empty;
+
+        for (int i = 0; i < ids.Length; i++)
+        {
+            if (i == ids.Length - 1)
+            {
+                query += $"ids[{i}]={ids[i]}";
+            }
+            else
+            {
+                query += $"ids[{i}]={ids[i]}&";
+            }
+        }
+
+        HttpResponseMessage responseMessage = await this.httpClient.DeleteAsync($"Messages/Delete?{query}");
+        if (responseMessage.IsSuccessStatusCode)
+        {
+            this.code = 1;
+            this.AllMessagesByUserIdViewModels = await this.httpClient.GetFromJsonAsync<IEnumerable<AllMessagesByUserIdViewModel>>("Messages/GetAllByReceiverId");
+            this.navigationManager.NavigateTo($"/mailbox/{this.code}");
+        }
+        else
+        {
+            this.code = 0;
+        }
+    }
+}

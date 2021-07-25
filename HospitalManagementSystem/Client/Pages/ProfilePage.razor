@@ -1,0 +1,514 @@
+﻿@page "/profile"
+@inject HttpClient httpClient
+@inject NavigationManager navigationManager
+
+<MudGrid>
+    <MudItem xs="12">
+        <Profile CurrentUser="this.currentUser"></Profile>
+    </MudItem>
+    <MudItem xs="12">
+        <MudTabs Elevation="1" Color="Color.Success" Rounded="true" PanelClass="pa-6">
+            <MudTabPanel Text="Treatments" ToolTip="ToolTip Treatments">
+                <MudTable Items="@this.treatments" Dense="@dense" Hover="@hover" Bordered="@bordered" Striped="@striped" Filter="new Func<AllTreatmentsByUserIdViewModel,bool>(FilterFuncTreatments)" @bind-SelectedItem="selectedTreatment" HeaderClass="table-head-bordered">
+                    <ToolBarContent>
+                        <MudText Typo="Typo.h6">Treatments</MudText>
+                        <MudSpacer />
+                        <MudTextField @bind-Value="searchStringTreatments" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="MudBlazor.Size.Medium" Class="mt-0"></MudTextField>
+                    </ToolBarContent>
+                    <HeaderContent>
+                        <MudTh>
+                            <MudTableSortLabel SortBy="new Func<AllTreatmentsByUserIdViewModel, object>(x=>x.Id)">T_ID</MudTableSortLabel>
+                        </MudTh>
+                        <MudTh>
+                            <MudTableSortLabel SortBy="new Func<AllTreatmentsByUserIdViewModel, object>(x=>x.Doctor)">Doctor</MudTableSortLabel>
+                        </MudTh>
+                        <MudTh>
+                            <MudTableSortLabel SortBy="new Func<AllTreatmentsByUserIdViewModel, object>(x=>x.Diagnose)">Diagnose</MudTableSortLabel>
+                        </MudTh>
+                        <MudTh>
+                            <MudTableSortLabel SortBy="new Func<AllTreatmentsByUserIdViewModel, object>(x=>x.Treatment)">Treatment</MudTableSortLabel>
+                        </MudTh>
+                        <MudTh>
+                            <MudTableSortLabel SortBy="new Func<AllTreatmentsByUserIdViewModel, object>(x=>x.Date)">Date</MudTableSortLabel>
+                        </MudTh>
+                        <MudTh>Options</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="T_ID">@context.Id</MudTd>
+                        <MudTd DataLabel="Doctor">@context.Doctor</MudTd>
+                        <MudTd DataLabel="Diagnose">@context.Diagnose</MudTd>
+                        <MudTd DataLabel="Treatment">@context.Treatment</MudTd>
+                        <MudTd DataLabel="Date">@context.Date.ToString("yyyy-MM-dd")</MudTd>
+                        <MudTd>
+                            <MudButton @onclick="() => this.NavigateToTreatmentDetails(context.Id)" Variant="Variant.Filled">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                                    <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z" />
+                                    <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z" />
+                                </svg>
+                                View
+                            </MudButton>
+                        </MudTd>
+                    </RowTemplate>
+                    <PagerContent>
+                        <MudTablePager />
+                    </PagerContent>
+                </MudTable>
+            </MudTabPanel>
+            <MudTabPanel Text="Recipes" ToolTip="ToolTip Recipes">
+                <MudTable Items="@this.recipes" Dense="@dense" Hover="@hover" Bordered="@bordered" Striped="@striped" Filter="new Func<AllRecipesByUserIdViewModel,bool>(FilterFuncRecipes)" @bind-SelectedItem="selectedRecipe" HeaderClass="table-head-bordered">
+                    <ToolBarContent>
+                        <MudText Typo="Typo.h6">Recipes</MudText>
+                        <MudSpacer />
+                        <MudTextField @bind-Value="searchStringRecipes" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                    </ToolBarContent>
+                    <HeaderContent>
+                        <MudTh>
+                            <MudTableSortLabel SortBy="new Func<AllRecipesByUserIdViewModel, object>(x=>x.Id)">R_ID</MudTableSortLabel>
+                        </MudTh>
+                        <MudTh>
+                            <MudTableSortLabel SortBy="new Func<AllRecipesByUserIdViewModel, object>(x=>x.Doctor)">Doctor</MudTableSortLabel>
+                        </MudTh>
+                        <MudTh>
+                            <MudTableSortLabel SortBy="new Func<AllRecipesByUserIdViewModel, object>(x=>x.Description)">Description</MudTableSortLabel>
+                        </MudTh>
+                        <MudTh>
+                            <MudTableSortLabel SortBy="new Func<AllRecipesByUserIdViewModel, object>(x=>x.OtherInfo)">Other Informations</MudTableSortLabel>
+                        </MudTh>
+                        <MudTh>Medicine</MudTh>
+                        <MudTh>
+                            <MudTableSortLabel SortBy="new Func<AllRecipesByUserIdViewModel, object>(x=>x.Date)">Date</MudTableSortLabel>
+                        </MudTh>
+                        <MudTh>Options</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="R_ID">@context.Id</MudTd>
+                        <MudTd DataLabel="Doctor">@context.Doctor</MudTd>
+                        <MudTd DataLabel="Description">@context.Description</MudTd>
+                        <MudTd DataLabel="Other Informations">@context.OtherInfo</MudTd>
+                        <MudTd DataLabel="Medicine">
+                            @foreach (var medicine in context.Medicines)
+                            {
+                                <p>&#9642; @medicine</p>
+                            }
+                        </MudTd>
+                        <MudTd DataLabel="Date">@context.Date.ToString("yyyy-MM-dd")</MudTd>
+                        <MudTd>
+                            <MudButton @onclick="() => this.NavigateToRecipeDetails(context.Id)" Variant="Variant.Filled">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                                    <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z" />
+                                    <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z" />
+                                </svg>
+                                View
+                            </MudButton>
+                        </MudTd>
+                    </RowTemplate>
+                    <PagerContent>
+                        <MudTablePager />
+                    </PagerContent>
+                </MudTable>
+            </MudTabPanel>
+            <MudTabPanel Text="Payments" ToolTip="ToolTip Payments">
+                <MudTable Items="@this.payments" Dense="@dense" Hover="@hover" Bordered="@bordered" Striped="@striped" Filter="new Func<AllPaymentsByUserIdViewModel,bool>(FilterFuncPayments)" @bind-SelectedItem="selectedPayment" HeaderClass="table-head-bordered" FooterClass="table-foot-bordered" CustomFooter="true">
+                    <ToolBarContent>
+                        <MudText Typo="Typo.h6">Payments</MudText>
+                        <MudSpacer />
+                        <MudTextField @bind-Value="searchStringPayments" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                    </ToolBarContent>
+                    <HeaderContent>
+                        <MudTh>
+                            <MudTableSortLabel SortBy="new Func<AllPaymentsByUserIdViewModel, object>(x=>x.Id)">Invoice ID</MudTableSortLabel>
+                        </MudTh>
+                        <MudTh>
+                            <MudTableSortLabel SortBy="new Func<AllPaymentsByUserIdViewModel, object>(x=>x.Title)">Title</MudTableSortLabel>
+                        </MudTh>
+                        <MudTh>
+                            <MudTableSortLabel SortBy="new Func<AllPaymentsByUserIdViewModel, object>(x=>x.Doctor)">Doctor</MudTableSortLabel>
+                        </MudTh>
+                        <MudTh>
+                            <MudTableSortLabel SortBy="new Func<AllPaymentsByUserIdViewModel, object>(x=>x.Date)">Date</MudTableSortLabel>
+                        </MudTh>
+                        <MudTh>
+                            <MudTableSortLabel SortBy="new Func<AllPaymentsByUserIdViewModel, object>(x=>x.Total)">Total</MudTableSortLabel>
+                        </MudTh>
+                        <MudTh>Options</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Invoice ID">@context.Id</MudTd>
+                        <MudTd DataLabel="Title">@context.Title</MudTd>
+                        <MudTd DataLabel="Doctor">@context.Doctor</MudTd>
+                        <MudTd DataLabel="Date">@context.Date.ToString("yyyy-MM-dd")</MudTd>
+                        <MudTd DataLabel="Total">@context.Total.ToString("f2")</MudTd>
+                        <MudTd>
+                            <MudButton @onclick="() => this.NavigateToPaymentDetails(context.Id)" Variant="Variant.Filled">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                                    <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z" />
+                                    <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z" />
+                                </svg>
+                                View
+                            </MudButton>
+                        </MudTd>
+                    </RowTemplate>
+                    <FooterContent>
+                        <MudTFootRow IsCheckable="true">
+                            <MudTd colspan="5">
+                                <MudText Align="Align.Right">Total</MudText>
+                            </MudTd>
+                            <MudTd>
+                                <MudText Align="Align.Right">
+                                    <strong>@this.payments.Sum(p => p.Total).ToString("f2")</strong>
+                                </MudText>
+                            </MudTd>
+                        </MudTFootRow>
+                    </FooterContent>
+                    <PagerContent>
+                        <MudTablePager />
+                    </PagerContent>
+                </MudTable>
+            </MudTabPanel>
+            <MudTabPanel Text="Documentations" ToolTip="ToolTip Documentations">
+                <MudTable Items="@this.documentations" Dense="@dense" Hover="@hover" Bordered="@bordered" Striped="@striped" Filter="new Func<AllDocumentationsByUserIdViewModel,bool>(FilterFuncDocumentations)" @bind-SelectedItem="selectedDocumentation" HeaderClass="table-head-bordered">
+                    <ToolBarContent>
+                        <MudText Typo="Typo.h6">Documentations</MudText>
+                        <MudSpacer />
+                        <MudTextField @bind-Value="searchStringDocumentations" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+                    </ToolBarContent>
+                    <HeaderContent>
+                        <MudTh>
+                            <MudTableSortLabel SortBy="new Func<AllDocumentationsByUserIdViewModel, object>(x=>x.Id)">ID</MudTableSortLabel>
+                        </MudTh>
+                        <MudTh>
+                            <MudTableSortLabel SortBy="new Func<AllDocumentationsByUserIdViewModel, object>(x=>x.Title)">Title</MudTableSortLabel>
+                        </MudTh>
+                        <MudTh>
+                            <MudTableSortLabel SortBy="new Func<AllDocumentationsByUserIdViewModel, object>(x=>x.Patient)">Patient</MudTableSortLabel>
+                        </MudTh>
+                        <MudTh>Documents</MudTh>
+                        <MudTh>
+                            <MudTableSortLabel SortBy="new Func<AllDocumentationsByUserIdViewModel, object>(x=>x.Date)">Date</MudTableSortLabel>
+                        </MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="ID">@context.Id</MudTd>
+                        <MudTd DataLabel="Title">@context.Title</MudTd>
+                        <MudTd DataLabel="Patient">@context.Patient</MudTd>
+                        <MudTd DataLabel="Documents">
+                            @for (int i = 0; i < context.Documents.Count(); i++)
+                            {
+                                <strong>@((i + 1) + ". ")</strong>
+                                <a href="#" class="text-primary">@context.Documents.ToList()[i]</a>
+                            }
+                        </MudTd>
+                        <MudTd DataLabel="Date">@context.Date.ToString("yyyy-MM-dd hh:mm:ss")</MudTd>
+                    </RowTemplate>
+                    <PagerContent>
+                        <MudTablePager />
+                    </PagerContent>
+                </MudTable>
+            </MudTabPanel>
+            <MudTabPanel Text="Details" ToolTip="ToolTip Details">
+                <EditForm Model="@input" OnValidSubmit="Edit">
+                    <DataAnnotationsValidator />
+                    <MudCard>
+                        <MudCardContent>
+                            <MudGrid>
+                                <MudItem xs="3">
+                                    <MudTextField Label="First name" HelperText="Min. 2, Max. 30 characters"
+                                                  @bind-Value="input.FirstName" For="@(() => input.FirstName)" />
+                                </MudItem>
+                                <MudItem xs="3">
+                                    <MudTextField Label="Last name" HelperText="Min. 2, Max. 30 characters"
+                                                  @bind-Value="input.LastName" For="@(() => input.LastName)" />
+                                </MudItem>
+                                <MudItem xs="3">
+                                    <MudSelect T="string" @bind-Value="input.Gender" Label="Gender">
+                                        <MudSelectItem Value="@("Male")" />
+                                        <MudSelectItem Value="@("Female")" />
+                                        <MudSelectItem Value="@("Other")" />
+                                    </MudSelect>
+                                </MudItem>
+                                <MudItem xs="3">
+                                    <RadzenDropDown TValue="int?" @bind-Value="input.BloodTypeId"
+                                                    Data=@(input.BloodTypes.Select(bt => new { Id = bt.Id, Name = bt.Name }).Distinct())
+                                                    TextProperty="Name" ValueProperty="Id" />
+                                </MudItem>
+                                <MudItem xs="3">
+                                    <MudTextField Label="Birth Date"
+                                                  @bind-Value="input.BirthDate" Format="yyyy/MM/dd" For="@(() => input.BirthDate)" />
+                                </MudItem>
+                                <MudItem xs="3">
+                                    <MudTextField Label="Address" HelperText="Min. 10, Max. 100 characters"
+                                                  @bind-Value="input.Address" For="@(() => input.Address)" />
+                                </MudItem>
+                                <MudItem xs="3">
+                                    <MudTextField Label="Address 2" HelperText="Min. 10, Max. 100 characters"
+                                                  @bind-Value="input.SecondAddress" For="@(() => input.SecondAddress)" />
+                                </MudItem>
+                                <MudItem xs="3">
+                                    <MudTextField Label="Street" HelperText="Min. 10, Max. 50 characters"
+                                                  @bind-Value="input.Street" For="@(() => input.Street)" />
+                                </MudItem>
+                                <MudItem xs="3">
+                                    <MudTextField Label="Zip Code" HelperText="Min. 4, Max. 4 characters"
+                                                  @bind-Value="input.ZipCode" For="@(() => input.ZipCode)" />
+                                </MudItem>
+                                <MudItem xs="3">
+                                    <MudTextField Label="City" HelperText="Min. 5, Max. 40 characters"
+                                                  @bind-Value="input.City" For="@(() => input.City)" />
+                                </MudItem>
+                                <MudItem xs="3">
+                                    <MudTextField Label="Province" HelperText="Min. 5, Max. 40 characters"
+                                                  @bind-Value="input.Province" For="@(() => input.Province)" />
+                                </MudItem>
+                                <MudItem xs="3">
+                                    <MudTextField Label="State" HelperText="Min. 5, Max. 40 characters"
+                                                  @bind-Value="input.State" For="@(() => input.State)" />
+                                </MudItem>
+                            </MudGrid>
+
+                            @if (input.ProfileImageUrl != null)
+                            {
+                                <img src="@input.ProfileImageUrl" alt="profile" />
+                            }
+                            
+                            <div class="form-row">
+                                <div class="form-group col-md-10 control-section">
+                                    <label class="col-form-label">Upload Image:</label>
+                                    <SfUploader ID="UploadFiles" AllowedExtensions=".png,.jpeg,.jpg">
+                                        <UploaderEvents ValueChange="OnChange" OnRemove="OnRemove"></UploaderEvents>
+                                        <UploaderTemplates>
+                                            <Template Context="HttpContext">
+                                                <table>
+                                                    <tr>
+                                                        <td>
+                                                            <img class="upload-image" alt="Preview Image @(HttpContext.Name)"
+                                                                 src="@(files.Count > 0 ? files.Where(item=>item.Name == HttpContext.Name)?.FirstOrDefault()?.Path : string.Empty)">
+                                                        </td>
+                                                        <td>
+                                                            <div style="padding: 7px;">
+                                                                <h5 title="@(HttpContext.Name)">@(HttpContext.Name)</h5>
+                                                                <i>@(HttpContext.Size) Bytes</i>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                                <span class="e-icons e-file-remove-btn remove" id="removeIcon" title="Remove"></span>
+                                            </Template>
+                                        </UploaderTemplates>
+                                    </SfUploader>
+                                </div>
+                            </div>
+
+                            <MudTextField T="string" Label="Enter other informations" Variant="Variant.Outlined" @bind-Value="input.OtherInfo" Lines="5" />
+                            <hr />
+                            <MudGrid>
+                                <MudItem xs="6">
+                                    <MudTextField Label="E-mail" Disabled="true"
+                                                  @bind-Value="input.Email" For="@(() => input.Email)" />
+                                </MudItem>
+                                <MudItem xs="6">
+                                    <MudTextField Label="Password" Placeholder="(Leave blank without change)"
+                                                  @bind-Value="input.Password" For="@(() => input.Password)" />
+                                </MudItem>
+                            </MudGrid>
+                        </MudCardContent>
+                        <MudCardActions>
+                            <MudButton ButtonType="MudBlazor.ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Submit</MudButton>
+                        </MudCardActions>
+                    </MudCard>
+                </EditForm>
+            </MudTabPanel>
+        </MudTabs>
+    </MudItem>
+</MudGrid>
+
+@code {
+    private bool dense = false;
+    private bool hover = true;
+    private bool striped = true;
+    private bool bordered = true;
+    private bool isAlertable = false;
+
+    private string searchStringTreatments = "";
+    private string searchStringRecipes = "";
+    private string searchStringPayments = "";
+    private string searchStringDocumentations = "";
+
+    private AllTreatmentsByUserIdViewModel selectedTreatment = null;
+    private HashSet<AllTreatmentsByUserIdViewModel> selectedTreatments = new HashSet<AllTreatmentsByUserIdViewModel>();
+    private AllRecipesByUserIdViewModel selectedRecipe = null;
+    private HashSet<AllRecipesByUserIdViewModel> selectedRecipes = new HashSet<AllRecipesByUserIdViewModel>();
+    private AllPaymentsByUserIdViewModel selectedPayment = null;
+    private HashSet<AllPaymentsByUserIdViewModel> selectedPayments = new HashSet<AllPaymentsByUserIdViewModel>();
+    private AllDocumentationsByUserIdViewModel selectedDocumentation = null;
+    private HashSet<AllDocumentationsByUserIdViewModel> selectedDocumentations = new HashSet<AllDocumentationsByUserIdViewModel>();
+
+    private IEnumerable<AllTreatmentsByUserIdViewModel> treatments = new List<AllTreatmentsByUserIdViewModel>();
+    private IEnumerable<AllRecipesByUserIdViewModel> recipes = new List<AllRecipesByUserIdViewModel>();
+    private IEnumerable<AllPaymentsByUserIdViewModel> payments = new List<AllPaymentsByUserIdViewModel>();
+    private IEnumerable<AllDocumentationsByUserIdViewModel> documentations = new List<AllDocumentationsByUserIdViewModel>();
+    private CurrentUserProfileViewModel currentUser = new CurrentUserProfileViewModel();
+
+    private EditCurrentUserInfoInputModel input = new EditCurrentUserInfoInputModel();
+    HttpResponseMessage responseMessage = new HttpResponseMessage();
+
+    public MultipartFormDataContent content;
+    public string responseStr;
+    public HttpResponseMessage filepath { get; set; }
+    List<FileInfo> files = new List<FileInfo>();
+
+    public class FileInfo
+    {
+        public string Path { get; set; }
+        public string Name { get; set; }
+        public double Size { get; set; }
+    }
+
+    public void OnChange(Syncfusion.Blazor.Inputs.UploadChangeEventArgs args)
+    {
+        files = new List<FileInfo>();
+        foreach (var file in args.Files)
+        {
+            var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), "Images");
+            var fullPath = Path.Combine(pathToSave, file.FileInfo.Name);
+            byte[] bytes = file.Stream.ToArray();
+            string base64 = Convert.ToBase64String(bytes);
+            files.Add(new FileInfo() { Path = @"data:image/" + file.FileInfo.Type + ";base64," + base64, Name = file.FileInfo.Name, Size = file.FileInfo.Size });
+            content = new MultipartFormDataContent {
+                    { new ByteArrayContent(file.Stream.GetBuffer()), "\"upload\"", file.FileInfo.Name }
+                };
+        }
+    }
+
+    public async Task UploadFile(MouseEventArgs args)
+    {
+        filepath = await this.httpClient.PostAsync("Filesave/Save", content);
+        this.responseStr = await filepath.Content.ReadAsStringAsync();
+    }
+
+    public void OnRemove(RemovingEventArgs args)
+    {
+        foreach (var removeFile in args.FilesData)
+        {
+            if (File.Exists(Path.Combine(@"\Images", removeFile.Name)))
+            {
+                File.Delete(Path.Combine(@"\Images\", removeFile.Name));
+            }
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        this.treatments = await this.httpClient.GetFromJsonAsync<IEnumerable<AllTreatmentsByUserIdViewModel>>("Treatments/AllByUserId");
+        this.recipes = await this.httpClient.GetFromJsonAsync<IEnumerable<AllRecipesByUserIdViewModel>>("Recipes/AllByUserId");
+        this.payments = await this.httpClient.GetFromJsonAsync<IEnumerable<AllPaymentsByUserIdViewModel>>("Payments/AllByUserId");
+        this.documentations = await this.httpClient.GetFromJsonAsync<IEnumerable<AllDocumentationsByUserIdViewModel>>("Documentations/AllByUserId");
+        this.currentUser = await this.httpClient.GetFromJsonAsync<CurrentUserProfileViewModel>("Users/GetProfileInfo");
+        this.input = await this.httpClient.GetFromJsonAsync<EditCurrentUserInfoInputModel>("Users/Edit");
+    }
+
+    private void ChangeAlertState()
+    {
+        this.isAlertable = !this.isAlertable;
+    }
+
+    async Task Edit()
+    {
+        string path = files.FirstOrDefault()?.Path;
+        if (path != null)
+        {
+            input.ProfileImageUrl = path;
+        }
+
+        this.responseMessage = await this.httpClient.PutAsJsonAsync<EditCurrentUserInfoInputModel>("Users/Edit", input);
+        if (this.responseMessage.IsSuccessStatusCode)
+        {
+            this.ChangeAlertState();
+            this.navigationManager.NavigateTo($"/{this.isAlertable}");
+        }
+    }
+
+    private bool FilterFuncTreatments(AllTreatmentsByUserIdViewModel treatment)
+    {
+        if (string.IsNullOrWhiteSpace(searchStringTreatments))
+            return true;
+        if (treatment.Id.ToString().Contains(searchStringTreatments, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (treatment.Doctor.Contains(searchStringTreatments, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (treatment.Diagnose.Contains(searchStringTreatments, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (treatment.Treatment.Contains(searchStringTreatments, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (treatment.Date.ToString("yyyy-MM-dd").Contains(searchStringTreatments, StringComparison.OrdinalIgnoreCase))
+            return true;
+        return false;
+    }
+
+    private bool FilterFuncRecipes(AllRecipesByUserIdViewModel recipe)
+    {
+        if (string.IsNullOrWhiteSpace(searchStringRecipes))
+            return true;
+        if (recipe.Id.ToString().Contains(searchStringRecipes, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (recipe.Doctor.Contains(searchStringRecipes, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (recipe.Description.Contains(searchStringRecipes, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (recipe.OtherInfo.Contains(searchStringRecipes, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (recipe.Date.ToString("yyyy-MM-dd").Contains(searchStringRecipes, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (recipe.Medicines.Any(m => m.Contains(searchStringRecipes, StringComparison.OrdinalIgnoreCase)))
+            return true;
+        return false;
+    }
+
+    private bool FilterFuncPayments(AllPaymentsByUserIdViewModel payment)
+    {
+        if (string.IsNullOrWhiteSpace(searchStringPayments))
+            return true;
+        if (payment.Id.ToString().Contains(searchStringPayments, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (payment.Doctor.Contains(searchStringPayments, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (payment.Title.Contains(searchStringPayments, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (payment.Date.ToString("yyyy-MM-dd").Contains(searchStringPayments, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (payment.Total.ToString("f2").Contains(searchStringPayments, StringComparison.OrdinalIgnoreCase))
+            return true;
+        return false;
+    }
+
+    private bool FilterFuncDocumentations(AllDocumentationsByUserIdViewModel documentation)
+    {
+        if (string.IsNullOrWhiteSpace(searchStringDocumentations))
+            return true;
+        if (documentation.Id.ToString().Contains(searchStringDocumentations, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (documentation.Title.Contains(searchStringDocumentations, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (documentation.Patient.Contains(searchStringDocumentations, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (documentation.Documents.Any(d => d.Contains(searchStringDocumentations, StringComparison.OrdinalIgnoreCase)))
+            return true;
+        if (documentation.Date.ToString("yyyy-MM-dd hh:mm:ss").Contains(searchStringDocumentations, StringComparison.OrdinalIgnoreCase))
+            return true;
+        return false;
+    }
+
+    void NavigateToTreatmentDetails(int id)
+    {
+        this.navigationManager.NavigateTo($"/treatments/details/{id}");
+    }
+
+    void NavigateToRecipeDetails(int id)
+    {
+        this.navigationManager.NavigateTo($"/recipes/details/{id}");
+    }
+
+    void NavigateToPaymentDetails(int id)
+    {
+        this.navigationManager.NavigateTo($"/payments/details/{id}");
+    }
+}

@@ -1,0 +1,95 @@
+﻿@page "/mailbox/sent/messages/{id:int}"
+@inject HttpClient httpClient
+@inject NavigationManager navigationManager
+
+<style>
+    .hr {
+        height: 5px;
+        background-image: -webkit-linear-gradient(left, rgba(66,133,244,.8), rgba(66, 133, 244,.6), rgba(0,0,0,0));
+        position: relative;
+        top: 5px;
+        width: 870px;
+    }
+</style>
+
+<MudGrid>
+    <MudItem xs="3">
+        <MudGrid>
+            <MudItem xs="12">
+                <MailboxInboxCompose></MailboxInboxCompose>
+            </MudItem>
+            <MudItem xs="12">
+                <Folders></Folders>
+            </MudItem>
+            <MudItem xs="12">
+                <Labels></Labels>
+            </MudItem>
+        </MudGrid>
+    </MudItem>
+    <MudItem xs="9">
+        <hr class="hr" />
+        <MudPaper>
+            <MudGrid>
+                <MudItem xs="12">
+                    <MudText Typo="Typo.h6">@this.viewModel.Subject</MudText>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudDivider />
+                </MudItem>
+                <MudItem xs="12">
+                    <MudGrid>
+                        <MudItem xs="2">
+                            <MudText>From: @this.viewModel.Creator</MudText>
+                        </MudItem>
+                        <MudItem xs="8"></MudItem>
+                        <MudItem xs="2">
+                            <MudText Class="text-black-50">@this.viewModel.CreatedOn.ToString("dd MMMM. yyyy hh:mm:ss")</MudText>
+                        </MudItem>
+                    </MudGrid>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudText>To: @string.Join(", ", this.viewModel.Receivers)</MudText>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudDivider />
+                </MudItem>
+                <MudItem xs="12">
+                    <MudText>@this.viewModel.Content</MudText>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudDivider />
+                </MudItem>
+                <MudItem xs="12">
+                    <MudButton OnClick="this.Delete" Variant="Variant.Filled" Color="Color.Default">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                            <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
+                            <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
+                        </svg>
+                        Delete
+                    </MudButton>
+                </MudItem>
+            </MudGrid>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
+@code {
+    private CreatedMessageByIdViewModel viewModel = new CreatedMessageByIdViewModel();
+
+    protected override async Task OnInitializedAsync()
+    {
+        this.viewModel = await this.httpClient.GetFromJsonAsync<CreatedMessageByIdViewModel>($"Messages/GetCreatedMessageById/{this.Id}");
+    }
+
+    async Task Delete()
+    {
+        HttpResponseMessage responseMessage = await this.httpClient.DeleteAsync($"Messages/Delete/{this.Id}");
+        if (responseMessage.IsSuccessStatusCode)
+        {
+            this.navigationManager.NavigateTo($"/mailbox/sent/{1}");
+        }
+    }
+
+    [Parameter]
+    public int Id { get; set; }
+}  

@@ -1,0 +1,183 @@
+﻿@page "/mailbox/messages/{id:int}"
+@inject HttpClient httpClient
+@inject NavigationManager navigationManager
+
+<style>
+    .hr {
+        height: 5px;
+        background-image: -webkit-linear-gradient(left, rgba(66,133,244,.8), rgba(66, 133, 244,.6), rgba(0,0,0,0));
+        position: relative;
+        top: 5px;
+        width: 870px;
+    }
+</style>
+
+<MudDialog @bind-IsVisible="visible">
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            Compose New Reply
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <div style="width: 870;">
+            <EditForm Model="@input" OnValidSubmit="Submit">
+                <ValidationSummary></ValidationSummary>
+                <DataAnnotationsValidator />
+                <MudCard>
+
+                    <MudDivider></MudDivider>
+                    <MudCardContent>
+                        <MudGrid>
+                            <MudItem xs="12">
+                                <RadzenHtmlEditor @bind-Value=@input.Content>
+                                    <RadzenHtmlEditorUndo />
+                                    <RadzenHtmlEditorRedo />
+                                    <RadzenHtmlEditorSeparator />
+                                    <RadzenHtmlEditorBold />
+                                    <RadzenHtmlEditorItalic />
+                                    <RadzenHtmlEditorUnderline />
+                                    <RadzenHtmlEditorStrikeThrough />
+                                    <RadzenHtmlEditorSeparator />
+                                    <RadzenHtmlEditorColor />
+                                    <RadzenHtmlEditorBackground />
+                                    <RadzenHtmlEditorRemoveFormat />
+                                </RadzenHtmlEditor>
+                            </MudItem>
+                        </MudGrid>
+                    </MudCardContent>
+                    <MudDivider></MudDivider>
+                    <MudCardActions>
+                        <MudGrid>
+                            <MudItem xs="2">
+                                <MudButton OnClick="this.Close" Variant="Variant.Filled" Color="Color.Default" Class="ml-auto">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-double-left" viewBox="0 0 16 16">
+                                        <path fill-rule="evenodd" d="M8.354 1.646a.5.5 0 0 1 0 .708L2.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z" />
+                                        <path fill-rule="evenodd" d="M12.354 1.646a.5.5 0 0 1 0 .708L6.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z" />
+                                    </svg>
+                                    Close
+                                </MudButton>
+                            </MudItem>
+                            <MudItem xs="8"></MudItem>
+                            <MudItem xs="2">
+                                <MudButton Style="position: relative; right: 40px;" ButtonType="MudBlazor.ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-envelope" viewBox="0 0 16 16">
+                                        <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2zm13 2.383-4.758 2.855L15 11.114v-5.73zm-.034 6.878L9.271 8.82 8 9.583 6.728 8.82l-5.694 3.44A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.739zM1 11.114l4.758-2.876L1 5.383v5.73z" />
+                                    </svg>
+                                    Submit
+                                </MudButton>
+                            </MudItem>
+                        </MudGrid>
+                    </MudCardActions>
+                </MudCard>
+            </EditForm>
+        </div>
+    </DialogContent>
+</MudDialog>
+
+<MudGrid>
+    <MudItem xs="3">
+        <MudGrid>
+            <MudItem xs="12">
+                <MailboxInboxCompose></MailboxInboxCompose>
+            </MudItem>
+            <MudItem xs="12">
+                <Folders></Folders>
+            </MudItem>
+            <MudItem xs="12">
+                <Labels></Labels>
+            </MudItem>
+        </MudGrid>
+    </MudItem>
+    <MudItem xs="9">
+        <hr class="hr" />
+        <MudPaper>
+            <MudGrid>
+                <MudItem xs="12">
+                    <MudText Typo="Typo.h6">@this.viewModel.Subject</MudText>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudDivider />
+                </MudItem>
+                <MudItem xs="12">
+                    <MudGrid>
+                        <MudItem xs="2">
+                            <MudText>From: @this.viewModel.Creator</MudText>
+                        </MudItem>
+                        <MudItem xs="8"></MudItem>
+                        <MudItem xs="2">
+                            <MudText Class="text-black-50">@this.viewModel.CreatedOn.ToString("dd MMMM. yyyy hh:mm:ss")</MudText>
+                        </MudItem>
+                    </MudGrid>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudDivider />
+                </MudItem>
+                <MudItem xs="12">
+                    <MudText>@this.viewModel.Content</MudText>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudDivider />
+                </MudItem>
+                <MudItem xs="12">
+                    <MudGrid>
+                        <MudItem xs="2">
+                            <MudButton OnClick="this.Delete" Variant="Variant.Filled" Color="Color.Default">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+                                    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
+                                    <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" />
+                                </svg>
+                                Delete
+                            </MudButton>
+                        </MudItem>
+                        <MudItem xs="8"></MudItem>
+                        <MudItem xs="2">
+                            <MudButton OnClick="this.OpenDialog" Variant="Variant.Filled" Color="Color.Default">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-reply-fill" viewBox="0 0 16 16">
+                                    <path d="M5.921 11.9 1.353 8.62a.719.719 0 0 1 0-1.238L5.921 4.1A.716.716 0 0 1 7 4.719V6c1.5 0 6 0 7 8-2.5-4.5-7-4-7-4v1.281c0 .56-.606.898-1.079.62z" />
+                                </svg>
+                                Reply
+                            </MudButton>
+                        </MudItem>
+                    </MudGrid>
+                </MudItem>
+            </MudGrid>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
+@code {
+    private ReceivedMessageByIdViewModel viewModel = new ReceivedMessageByIdViewModel();
+    private CreateReplyInputModel input = new CreateReplyInputModel();
+
+    protected override async Task OnInitializedAsync()
+    {
+        this.viewModel = await this.httpClient.GetFromJsonAsync<ReceivedMessageByIdViewModel>($"Messages/GetReceivedMessageById/{this.Id}");
+    }
+
+    async Task Submit()
+    {
+        input.ParentId = this.Id;
+        this.visible = false;
+        HttpResponseMessage responseMessage = await this.httpClient.PostAsJsonAsync<CreateReplyInputModel>("Messages/CreateReply", input);
+        if (responseMessage.IsSuccessStatusCode)
+        {
+            this.navigationManager.NavigateTo($"/mailbox/sent/reply/{1}");
+        }
+    }
+
+    async Task Delete()
+    {
+        HttpResponseMessage responseMessage = await this.httpClient.DeleteAsync($"Messages/Delete/{this.Id}");
+        if (responseMessage.IsSuccessStatusCode)
+        {
+            this.navigationManager.NavigateTo($"/mailbox/deleted/{true}");
+        }
+    }
+
+    private bool visible;
+    private void OpenDialog() => this.visible = true;
+    void Close() => this.visible = false;
+
+    [Parameter]
+    public int Id { get; set; }
+}  

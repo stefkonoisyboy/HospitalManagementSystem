@@ -1,0 +1,101 @@
+﻿@page "/payments"
+@inject HttpClient httpClient
+@inject NavigationManager navigationManager
+
+<MudTable Items="@this.viewModel" Dense="@dense" Hover="@hover" Bordered="@bordered" Striped="@striped" Filter="new Func<AllPaymentsByUserIdViewModel,bool>(FilterFunc)" @bind-SelectedItem="selectedItem" HeaderClass="table-head-bordered" FooterClass="table-foot-bordered" CustomFooter="true">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Payments</MudText>
+        <MudSpacer />
+        <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<AllPaymentsByUserIdViewModel, object>(x=>x.Id)">Invoice ID</MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<AllPaymentsByUserIdViewModel, object>(x=>x.Title)">Title</MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<AllPaymentsByUserIdViewModel, object>(x=>x.Doctor)">Doctor</MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<AllPaymentsByUserIdViewModel, object>(x=>x.Date)">Date</MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<AllPaymentsByUserIdViewModel, object>(x=>x.Total)">Total</MudTableSortLabel>
+        </MudTh>
+        <MudTh>Options</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Invoice ID">@context.Id</MudTd>
+        <MudTd DataLabel="Title">@context.Title</MudTd>
+        <MudTd DataLabel="Doctor">@context.Doctor</MudTd>
+        <MudTd DataLabel="Date">@context.Date.ToString("yyyy-MM-dd")</MudTd>
+        <MudTd DataLabel="Total">@context.Total.ToString("f2")</MudTd>
+        <MudTd>
+            <MudButton @onclick="() => this.NavigateToDetails(context.Id)" Variant="Variant.Filled">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                    <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z" />
+                    <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z" />
+                </svg>
+                View
+            </MudButton>
+        </MudTd>
+    </RowTemplate>
+    <FooterContent>
+        <MudTFootRow IsCheckable="true">
+            <MudTd colspan="5">
+                <MudText Align="Align.Right">Total</MudText>
+            </MudTd>
+            <MudTd>
+                <MudText Align="Align.Right">
+                    <strong>@this.viewModel.Sum(p => p.Total).ToString("f2")</strong>
+                </MudText>
+            </MudTd>
+        </MudTFootRow>
+    </FooterContent>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>
+
+@code {
+    private bool dense = false;
+    private bool hover = true;
+    private bool striped = true;
+    private bool bordered = true;
+    private string searchString = "";
+    private AllPaymentsByUserIdViewModel selectedItem = null;
+    private HashSet<AllPaymentsByUserIdViewModel> selectedItems = new HashSet<AllPaymentsByUserIdViewModel>();
+
+    private IEnumerable<AllPaymentsByUserIdViewModel> viewModel = new List<AllPaymentsByUserIdViewModel>();
+    private CurrentUserProfileViewModel currentUser = new CurrentUserProfileViewModel();
+
+    protected override async Task OnInitializedAsync()
+    {
+        this.viewModel = await this.httpClient.GetFromJsonAsync<IEnumerable<AllPaymentsByUserIdViewModel>>("Payments/AllByUserId");
+        this.currentUser = await this.httpClient.GetFromJsonAsync<CurrentUserProfileViewModel>("Users/GetProfileInfo");
+    }
+
+    private bool FilterFunc(AllPaymentsByUserIdViewModel payment)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (payment.Id.ToString().Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (payment.Doctor.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (payment.Title.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (payment.Date.ToString("yyyy-MM-dd").Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (payment.Total.ToString("f2").Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        return false;
+    }
+
+    void NavigateToDetails(int id)
+    {
+        this.navigationManager.NavigateTo($"/payments/details/{id}");
+    }
+}

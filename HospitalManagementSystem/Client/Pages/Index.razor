@@ -1,0 +1,13 @@
+﻿@page "/"
+@page "/{isAlertable:bool}"
+@attribute [Authorize]
+
+@if (this.IsAlertable)
+{
+    <MudAlert Severity="Severity.Success">Successfully updated information about your profile!</MudAlert>
+}
+
+@code {
+    [Parameter]
+    public bool IsAlertable { get; set; }
+}

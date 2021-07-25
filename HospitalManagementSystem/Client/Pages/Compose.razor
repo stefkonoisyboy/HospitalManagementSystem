@@ -1,0 +1,118 @@
+﻿@page "/mailbox/compose"
+@inject HttpClient httpClient
+@inject NavigationManager navigationManager
+@inject IJSRuntime JSRunTime 
+@using Syncfusion.Blazor.RichTextEditor
+
+<style>
+    .hr {
+        height: 5px;
+        background-image: -webkit-linear-gradient(left, rgba(66,133,244,.8), rgba(66, 133, 244,.6), rgba(0,0,0,0));
+        position: relative;
+        top: 20px;
+        width: 870px;
+    }
+</style>
+
+<MudGrid>
+    <MudItem xs="3">
+        <MudGrid>
+            <MudItem xs="12">
+                <MailboxInboxCompose></MailboxInboxCompose>
+            </MudItem>
+            <MudItem xs="12">
+                <Folders></Folders>
+            </MudItem>
+            <MudItem xs="12">
+                <Labels></Labels>
+            </MudItem>
+        </MudGrid>
+    </MudItem>
+    <MudItem xs="9">
+        <hr class="hr" />
+
+        <div style="width: 870px;">
+            <EditForm Model="@input" OnValidSubmit="Submit">
+                <ValidationSummary></ValidationSummary>
+                <DataAnnotationsValidator />
+                <MudCard>
+                    <MudText Typo="Typo.h6">Compose New Message</MudText>
+                    <MudDivider></MudDivider>
+                    <MudCardContent>
+                        <MudGrid>
+                            <MudItem xs="12">
+                                <RadzenDropDown Style="width: 840px;" TValue="IEnumerable<string>" AllowClear="true" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                                @bind-Value=@input.UserIds Multiple="true" Placeholder="Select Users" Data=@(input.Users) TextProperty="FullName" ValueProperty="Id" />
+                            </MudItem>
+                            <MudItem xs="12">
+                                <MudTextField Label="Subject" Placeholder="Subject: " HelperText="Min. 3 characters, Max. 20 characters"
+                                              @bind-Value="input.Subject" For="@(() => input.Subject)" />
+                            </MudItem>
+                            <MudItem xs="12">
+                                <RadzenHtmlEditor @bind-Value=@input.Content>
+                                    <RadzenHtmlEditorUndo />
+                                    <RadzenHtmlEditorRedo />
+                                    <RadzenHtmlEditorSeparator />
+                                    <RadzenHtmlEditorBold />
+                                    <RadzenHtmlEditorItalic />
+                                    <RadzenHtmlEditorUnderline />
+                                    <RadzenHtmlEditorStrikeThrough />
+                                    <RadzenHtmlEditorSeparator />
+                                    <RadzenHtmlEditorColor />
+                                    <RadzenHtmlEditorBackground />
+                                    <RadzenHtmlEditorRemoveFormat />
+                                </RadzenHtmlEditor>
+                            </MudItem>
+                        </MudGrid>
+                    </MudCardContent>
+                    <MudDivider></MudDivider>
+                    <MudCardActions>
+                        <MudGrid>
+                            <MudItem xs="2">
+                                <MudButton OnClick="this.NavigateToMailbox" Variant="Variant.Filled" Color="Color.Default" Class="ml-auto">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chevron-double-left" viewBox="0 0 16 16">
+                                        <path fill-rule="evenodd" d="M8.354 1.646a.5.5 0 0 1 0 .708L2.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z" />
+                                        <path fill-rule="evenodd" d="M12.354 1.646a.5.5 0 0 1 0 .708L6.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z" />
+                                    </svg>
+                                    Cancel
+                                </MudButton>
+                            </MudItem>
+                            <MudItem xs="8"></MudItem>
+                            <MudItem xs="2">
+                                <MudButton ButtonType="MudBlazor.ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-envelope" viewBox="0 0 16 16">
+                                        <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2zm13 2.383-4.758 2.855L15 11.114v-5.73zm-.034 6.878L9.271 8.82 8 9.583 6.728 8.82l-5.694 3.44A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.739zM1 11.114l4.758-2.876L1 5.383v5.73z" />
+                                    </svg>
+                                    Submit
+                                </MudButton>
+                            </MudItem>
+                        </MudGrid>
+                    </MudCardActions>
+                </MudCard>
+            </EditForm>
+        </div>
+    </MudItem>
+</MudGrid>
+
+@code {
+    private CreateMessageInputModel input = new CreateMessageInputModel();
+
+    protected override async Task OnInitializedAsync()
+    {
+        this.input = await this.httpClient.GetFromJsonAsync<CreateMessageInputModel>("Messages/Create");
+    }
+
+    public async Task Submit()
+    { 
+        HttpResponseMessage responseMessage = await this.httpClient.PostAsJsonAsync<CreateMessageInputModel>("Messages/Create", input);
+        if (responseMessage.IsSuccessStatusCode)
+        {
+            this.navigationManager.NavigateTo($"/mailbox/{1}");
+        }
+    }
+
+    void NavigateToMailbox()
+    {
+        this.navigationManager.NavigateTo("/mailbox");
+    }
+}

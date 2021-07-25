@@ -1,0 +1,31 @@
+﻿@inject NavigationManager navigationManager
+
+<MudExpansionPanels>
+    <MudExpansionPanel Dense="true" Text="Folders" IsExpanded="isExpanded" IsExpandedChanged="this.Expand">
+        <MudDivider />
+        <MudList Clickable="true">
+            <MudListItem OnClick="this.NavigateToInbox" Text="Inbox" Icon="@Icons.Material.Filled.Inbox" />
+            <MudDivider />
+            <MudListItem OnClick="this.NavigateToSent" Text="Sent" Icon="@Icons.Material.Filled.Send" />
+        </MudList>
+    </MudExpansionPanel>
+</MudExpansionPanels>
+
+@code {
+    private bool isExpanded = true;
+
+    private void Expand()
+    {
+        this.isExpanded = !this.isExpanded;
+    }
+
+    private void NavigateToInbox()
+    {
+        this.navigationManager.NavigateTo("/mailbox");
+    }
+
+    private void NavigateToSent()
+    {
+        this.navigationManager.NavigateTo("/mailbox/sent");
+    }
+}  

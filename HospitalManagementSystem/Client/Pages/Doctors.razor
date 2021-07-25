@@ -1,0 +1,122 @@
+﻿@page "/doctors"
+@inject HttpClient httpClient
+@inject NavigationManager navigationManager
+
+<MudTable Items="@this.viewModel" Dense="@dense" Hover="@hover" Bordered="@bordered" Striped="@striped" Filter="new Func<AllDoctorsViewModel,bool>(FilterFunc)" HeaderClass="table-head-bordered" @bind-SelectedItem="selectedItem">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Doctors</MudText>
+        <MudSpacer />
+        <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<AllDoctorsViewModel, object>(x=>x.Id)">ID</MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<AllDoctorsViewModel, object>(x=>x.Department)">Department</MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<AllDoctorsViewModel, object>(x=>x.FirstName)">First Name</MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<AllDoctorsViewModel, object>(x=>x.LastName)">Last Name</MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<AllDoctorsViewModel, object>(x=>x.Gender)">Gender</MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<AllDoctorsViewModel, object>(x=>x.Email)">E-mail</MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<AllDoctorsViewModel, object>(x=>x.IsActive)">Status</MudTableSortLabel>
+        </MudTh>
+        <MudTh>Options</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="ID">@context.Id</MudTd>
+        <MudTd DataLabel="Department">@context.Department</MudTd>
+        <MudTd DataLabel="First Name">@context.FirstName</MudTd>
+        <MudTd DataLabel="Last Name">@context.LastName</MudTd>
+        <MudTd DataLabel="Gender">@context.Gender</MudTd>
+        <MudTd DataLabel="E-mail">@context.Email</MudTd>
+        <MudTd DataLabel="Status">
+            @if (context.IsActive)
+            {
+                <p style="position: relative; top: 20px; right: 10px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-dot text-success" viewBox="0 0 16 16">
+                        <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z" />
+                    </svg>
+                    <strong style="position: relative; bottom: 35px; left: 35px;">@online</strong>
+                </p>
+            }
+            else
+            {
+                <p style="position: relative; top: 20px; right: 10px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-dot text-danger" viewBox="0 0 16 16">
+                        <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z" />
+                    </svg>
+                    <strong style="position: relative; bottom: 35px; left: 35px;">@offline</strong>
+                </p>
+            }
+        </MudTd>
+        <MudTd>
+            <MudButton @onclick="() => this.NavigateToProfile(context.Id)" Variant="Variant.Filled">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                    <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z" />
+                    <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z" />
+                </svg>
+                Profile
+            </MudButton>
+        </MudTd>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>
+
+@code {
+    private string online = "Online";
+    private string offline = "Offline";
+
+    private bool dense = false;
+    private bool hover = true;
+    private bool striped = true;
+    private bool bordered = true;
+    private string searchString = "";
+    private AllDoctorsViewModel selectedItem = null;
+    private HashSet<AllDoctorsViewModel> selectedItems = new HashSet<AllDoctorsViewModel>();
+
+    private IEnumerable<AllDoctorsViewModel> viewModel = new List<AllDoctorsViewModel>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        this.viewModel = await this.httpClient.GetFromJsonAsync<IEnumerable<AllDoctorsViewModel>>("Users/GetAllDoctors");
+    }
+
+    private bool FilterFunc(AllDoctorsViewModel recipe)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (recipe.Id.ToString().Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (recipe.Department.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (recipe.FirstName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (recipe.LastName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (recipe.Email.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (recipe.Gender.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (recipe.IsActive.ToString().Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        return false;
+    }
+
+    void NavigateToProfile(string id)
+    {
+        this.navigationManager.NavigateTo($"/doctors/profile/{id}");
+    }
+}

@@ -1,0 +1,130 @@
+﻿@inject HttpClient httpClient
+@inject AuthenticationStateProvider authStateProvider
+
+<style>
+    #profileImage {
+        margin: 0 auto;
+        width: 100px;
+        height: 100px;
+        padding: 3px;
+        border: 3px solid #d2d6de;
+        border-radius: 50%;
+        max-width: 100%;
+    }
+</style>
+
+<MudPaper Style="background-color: lightblue; position: relative; right: 15px;" Width="260px" Class="d-inline-flex py-3" Square="true">
+    <MudNavMenu Class="mud-width-full">
+        <MudText Style="color: white;" Typo="Typo.h6" Class="px-4 text-center">Medical</MudText>
+        <MudGrid>
+            <MudItem xs="6">
+                @if (this.viewModel.ProfileImageUrl == null)
+                {
+                    <img id="profileImage" src="https://medical.san-solutions.net/img/noavatar.jpg" alt="profileImage" />
+                }
+                else
+                {
+                    <img id="profileImage" src="@this.viewModel.ProfileImageUrl" alt="profileImage" />
+                }
+            </MudItem>
+            <MudItem xs="6">
+                <strong style="font-size: 16px; position: relative; top: 15px;">@this.viewModel.FirstName @this.viewModel.LastName</strong>
+                <p style="position: relative; top: 10px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-dot text-success" viewBox="0 0 16 16">
+                        <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z" />
+                    </svg>
+                    <strong style="position: relative; right: 10px;">@online</strong>
+                </p>
+            </MudItem>
+        </MudGrid>
+        <div style="background-color: darkslategrey;">
+            <p style="color: white">PUBLIC SITE</p>
+        </div>
+        <MudNavLink Href="/" Icon="@Icons.Filled.Home">Home</MudNavLink>
+        <div style="background-color: darkslategrey;">
+            <p style="color: white">MAIN NAVIGATION</p>
+        </div>
+        <MudNavLink Href="/dashboard" Icon="@Icons.Filled.Dashboard">Dashboard</MudNavLink>
+        <MudNavLink Href="/mailbox" Icon="@Icons.Filled.Email">Mailbox</MudNavLink>
+        <MudNavLink Href="/appointments" Icon="@Icons.Filled.CalendarToday">Appointments</MudNavLink>
+        <MudNavGroup Title="Patients" Icon="@Icons.Filled.People">
+            <MudNavLink Href="/doctors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-circle" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                </svg>
+                Doctors List
+            </MudNavLink>
+            <MudNavLink Href="/payments">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-circle" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                </svg>
+                Payments
+            </MudNavLink>
+            <MudNavLink Href="/treatments">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-circle" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                </svg>
+                Treatments
+            </MudNavLink>
+            <MudNavLink Href="/recipes">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-circle" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                </svg>
+                Recipes
+            </MudNavLink>
+            <MudNavLink Href="/documentations">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-circle" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                </svg>
+                Documents
+            </MudNavLink>
+        </MudNavGroup>
+        <MudNavGroup Title="Hospital Options" Icon="@Icons.Filled.LocalHospital">
+            <MudNavLink Href="/beds">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-circle" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                </svg>
+                Bed Assignment
+            </MudNavLink>
+            <MudNavLink Href="/blood">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-circle" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                </svg>
+                Blood Bank
+            </MudNavLink>
+        </MudNavGroup>
+        <MudNavGroup Title="Medicine" Icon="@Icons.Filled.MedicalServices">
+            <MudNavLink Href="/medicines">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-circle" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                </svg>
+                Medicine List
+            </MudNavLink>
+        </MudNavGroup>
+    </MudNavMenu>
+</MudPaper>
+<div style="background-color: lightblue; height: 310px; width: 260px; position: relative; right: 15px;">
+</div>
+
+@code {
+    private CurrentUserNavMenuViewModel viewModel = new CurrentUserNavMenuViewModel();
+
+    private string online = "Online";
+    private string offline = "Offline";
+
+    private bool collapseNavMenu = true;
+
+    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await this.authStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        this.viewModel = await this.httpClient.GetFromJsonAsync<CurrentUserNavMenuViewModel>($"Users/GetCurrentUserNavMenu/{user.Identity.Name}");
+    }
+}

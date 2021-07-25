@@ -1,0 +1,131 @@
+﻿@page "/treatments/details/{id:int}"
+@inject HttpClient httpClient
+
+<style>
+    body {
+        background-color: lightgray;
+    }
+</style>
+
+<MudGrid>
+    <MudItem xs="2">
+        <h3>Treatment <strong class="text-black-50" style="font-size: 25px;">#@this.Id</strong></h3>
+    </MudItem>
+</MudGrid>
+
+<div class="bg-light">
+    <MudGrid>
+        <MudItem xs="4">
+            <h2>Medical</h2>
+            <p>@this.viewModel.PatientAddress</p>
+            <p>@this.viewModel.PatientCity</p>
+            <p>@this.viewModel.PatientState</p>
+            <p>@this.viewModel.PatientPhone</p>
+            <p>@this.viewModel.PatientEmail</p>
+        </MudItem>
+        <MudItem xs="8">
+            <img src="https://medical.san-solutions.net/img/logo2.png" alt="medical" />
+        </MudItem>
+    </MudGrid>
+
+    <div class="text-center" style="background-image: url(https://medical.san-solutions.net/img/back.png)">
+        <hr />
+        <h1 class="text-secondary">Treatment #@this.Id</h1>
+        <hr />
+    </div>
+
+    <MudGrid>
+        <MudItem xs="4">
+            <MudGrid>
+                <MudItem xs="6">
+                    <p class="text-black-50">CLIENT</p>
+                </MudItem>
+                <MudItem xs="6">
+                    <p>@this.viewModel.Patient</p>
+                </MudItem>
+                <MudItem xs="6">
+                    <p class="text-black-50">ADDRESS</p>
+                </MudItem>
+                <MudItem xs="6">
+                    <p>@this.viewModel.PatientAddress</p>
+                </MudItem>
+                <MudItem xs="6">
+                    <p class="text-black-50">PHONE NUMBER</p>
+                </MudItem>
+                <MudItem xs="6">
+                    <p>@this.viewModel.PatientPhone</p>
+                </MudItem>
+                <MudItem xs="6">
+                    <p class="text-black-50">E-MAIL</p>
+                </MudItem>
+                <MudItem xs="6">
+                    <p>@this.viewModel.PatientEmail</p>
+                </MudItem>
+                <MudItem xs="6">
+                    <p class="text-black-50">DATE</p>
+                </MudItem>
+                <MudItem xs="6">
+                    <p>@this.viewModel.Date.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture)</p>
+                </MudItem>
+            </MudGrid>
+        </MudItem>
+        <MudItem xs="4">
+
+        </MudItem>
+        <MudItem xs="4">
+            <MudGrid>
+                <MudItem xs="6">
+                    <p class="text-black-50">DOCTOR</p>
+                </MudItem>
+                <MudItem xs="6">
+                    <p>@this.viewModel.Doctor</p>
+                </MudItem>
+                <MudItem xs="6">
+                    <p class="text-black-50">E-MAIL</p>
+                </MudItem>
+                <MudItem xs="6">
+                    <p>@this.viewModel.DoctorEmail</p>
+                </MudItem>
+                <MudItem xs="6">
+                    <p class="text-black-50">DATE</p>
+                </MudItem>
+                <MudItem xs="6">
+                    <p>@this.viewModel.Date.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture)</p>
+                </MudItem>
+            </MudGrid>
+        </MudItem>
+    </MudGrid>
+
+    <table class="table table-striped table-hover">
+        <tbody>
+            <tr class="text-secondary">
+                <th>Diagnose</th>
+            </tr>
+            <tr>
+                <td>
+                    <p>@this.viewModel.Diagnose</p>
+                </td>
+            </tr>
+            <tr class="text-secondary">
+                <th>Treatment</th>
+            </tr>
+            <tr>
+                <td>
+                    <p>@this.viewModel.Treatment</p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+@code {
+    private TreatmentByIdViewModel viewModel = new TreatmentByIdViewModel();
+
+    protected override async Task OnInitializedAsync()
+    {
+        this.viewModel = await this.httpClient.GetFromJsonAsync<TreatmentByIdViewModel>($"Treatments/Details/{this.Id}");
+    }
+
+    [Parameter]
+    public int Id { get; set; }
+}  

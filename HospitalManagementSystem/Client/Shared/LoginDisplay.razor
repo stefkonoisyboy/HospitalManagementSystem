@@ -1,0 +1,92 @@
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.WebAssembly.Authentication
+
+@inject NavigationManager Navigation
+@inject SignOutSessionStateManager SignOutManager
+@inject HttpClient httpClient
+@inject AuthenticationStateProvider authStateProvider
+
+    <style>
+        #profileImage {
+            margin: 0 auto;
+            width: 100px;
+            height: 100px;
+            padding: 3px;
+            border: 3px solid #d2d6de;
+            border-radius: 50%;
+            max-width: 100%;
+        }
+    </style>
+
+<AuthorizeView>
+    <Authorized>
+        <MudMenu Direction="Direction.Bottom" OffsetY="true" FullWidth="true">
+            <ActivatorContent>
+                <MudChip Icon="@Icons.Material.Filled.Person" Color="Color.Primary">@context.User.Identity.Name</MudChip>
+            </ActivatorContent>
+            <ChildContent>
+                <div class="text-center">
+                    @if (this.viewModel.ProfileImageUrl == null)
+                    {
+                        <img id="profileImage" src="https://medical.san-solutions.net/img/noavatar.jpg" alt="profileImage" />
+                    }
+                    else
+                    {
+                        <img id="profileImage" src="@this.viewModel.ProfileImageUrl" alt="profileImage" />
+                    }
+                </div>
+                <strong class="text-center" style="font-size: 16px;">@this.viewModel.FullName - </strong>
+                <strong class="text-center" style="font-size: 16px;">@this.viewModel.Role</strong>
+                <p>Member Since @this.viewModel.CreatedOn?.ToString("MMMM, yyyy")</p>
+                <MudGrid>
+                    <MudItem xs="6">
+                        <MudButton @onclick="this.NavigateToProfile" Variant="Variant.Filled">Profile</MudButton>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudButton Variant="Variant.Filled" @onclick="BeginSignOut">Logout</MudButton>
+                    </MudItem>
+                </MudGrid>
+            </ChildContent>
+        </MudMenu>
+        @*<a href="authentication/profile">Hello, @context.User.Identity.Name!</a>*@
+    </Authorized>
+    <NotAuthorized>
+        <a href="authentication/register">Register</a>
+        <a href="authentication/login">Log in</a>
+        @*@context.User.Identity.*@
+    </NotAuthorized>
+</AuthorizeView>
+
+@code{
+    private CurrentUserViewModel viewModel = new CurrentUserViewModel();
+    private UpdateUserStatusInputModel input = new UpdateUserStatusInputModel();
+
+    private async Task BeginSignOut(MouseEventArgs args)
+    {
+        var authState = await this.authStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        input.Username = user.Identity.Name;
+        input.Status = false;
+        await this.httpClient.PutAsJsonAsync<UpdateUserStatusInputModel>("Users/ChangeUserStatus", input);
+
+        await SignOutManager.SetSignOutState();
+        Navigation.NavigateTo("authentication/logout");
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await this.authStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        this.viewModel = await this.httpClient.GetFromJsonAsync<CurrentUserViewModel>($"Users/GetCurrentUser/{user.Identity.Name}");
+
+        input.Username = user.Identity.Name;
+        input.Status = true;
+        await this.httpClient.PutAsJsonAsync<UpdateUserStatusInputModel>("Users/ChangeUserStatus", input);
+    }
+
+    void NavigateToProfile()
+    {
+        this.Navigation.NavigateTo("/profile");
+    }
+}

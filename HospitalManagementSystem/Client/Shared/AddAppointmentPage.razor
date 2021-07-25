@@ -1,0 +1,40 @@
+﻿@inject Radzen.DialogService dialogService
+@inject HttpClient httpClient
+
+<EditForm Model="@input" OnValidSubmit="Submit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <MudCard>
+        <MudCardContent>
+            <RadzenDropDown TValue="string" @bind-Value="input.DoctorId"
+                            Data=@input.Doctors
+                            TextProperty="FullName" ValueProperty="Id" />
+            <MudTextField Label="Title" Placeholder="Title" HelperText="Min. 3 characters, Max. 30 characters"
+                          @bind-Value="input.Title" For="@(() => input.Title)" />
+            <RadzenDatePicker TValue="DateTime" @bind-Value="input.StartDate" Placeholder="Start Date" ShowTime="true" ShowSeconds="true" HoursStep="1.5" MinutesStep="5" SecondsStep="10" DateFormat="MM/dd/yyyy HH:mm" />
+            <RadzenDatePicker TValue="DateTime" @bind-Value="input.EndDate" Placeholder="End Date" ShowTime="true" ShowSeconds="true" HoursStep="1.5" MinutesStep="5" SecondsStep="10" DateFormat="MM/dd/yyyy HH:mm" />
+            <MudTextField Label="Description"
+                          @bind-Value="input.Description" For="@(() => input.Description)" />
+            <MudSelect T="string" @bind-Value="input.Status" Label="Status">
+                <MudSelectItem Value="@("Waiting")" />
+            </MudSelect>
+        </MudCardContent>
+        <MudCardActions>
+            <MudButton ButtonType="MudBlazor.ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Register</MudButton>
+        </MudCardActions>
+    </MudCard>
+</EditForm>
+
+@code {
+    private CreateAppointmentInputModel input = new CreateAppointmentInputModel();
+
+    protected override async Task OnInitializedAsync()
+    {
+        this.input = await this.httpClient.GetFromJsonAsync<CreateAppointmentInputModel>("Appointments/Create");
+    }
+
+    async Task Submit()
+    {
+        await this.httpClient.PostAsJsonAsync<CreateAppointmentInputModel>("Appointments/Create", input);
+    }
+}

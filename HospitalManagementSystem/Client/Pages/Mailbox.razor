@@ -1,0 +1,41 @@
+﻿@page "/mailbox"
+@page "/mailbox/deleted/{isDeleteMessageAlertable:bool}"
+@page "/mailbox/{code:int}"
+@inject HttpClient httpClient
+
+@if (this.IsDeleteMessageAlertable)
+{
+    <MudAlert Severity="Severity.Success">Successfully deleted message from your inbox!</MudAlert>
+}
+
+@if (this.Code == 1)
+{
+    <MudAlert Severity="Severity.Success">You successfully sent message!</MudAlert>
+}
+
+<MudGrid>
+    <MudItem xs="3">
+        <MudGrid>
+            <MudItem xs="12">
+                <MailboxInboxCompose Location=" - Inbox"></MailboxInboxCompose>
+            </MudItem>
+            <MudItem xs="12">
+                <Folders></Folders>
+            </MudItem>
+            <MudItem xs="12">
+                <Labels></Labels>
+            </MudItem>
+        </MudGrid>
+    </MudItem>
+    <MudItem xs="9">
+        <Inbox></Inbox>
+    </MudItem>
+</MudGrid>
+
+@code {
+    [Parameter]
+    public bool IsDeleteMessageAlertable { get; set; }
+
+    [Parameter]
+    public int Code { get; set; }
+}

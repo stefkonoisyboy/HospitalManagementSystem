@@ -1,0 +1,41 @@
+﻿@page "/mailbox/sent"
+@page "/mailbox/sent/{code:int}"
+@page "/mailbox/sent/reply/{created:int}"
+@inject HttpClient httpClient
+
+@if (this.Code == 1)
+{
+    <MudAlert Severity="Severity.Success">Successfully deleted message from your sent messages!</MudAlert>
+}
+
+@if (this.Created == 1)
+{
+    <MudAlert Severity="Severity.Success">Successfully created reply!</MudAlert>
+}
+
+<MudGrid>
+    <MudItem xs="3">
+        <MudGrid>
+            <MudItem xs="12">
+                <MailboxInboxCompose Location=" - Sent"></MailboxInboxCompose>
+            </MudItem>
+            <MudItem xs="12">
+                <Folders></Folders>
+            </MudItem>
+            <MudItem xs="12">
+                <Labels></Labels>
+            </MudItem>
+        </MudGrid>
+    </MudItem>
+    <MudItem xs="9">
+        <Sent></Sent>
+    </MudItem>
+</MudGrid>
+
+@code {
+    [Parameter]
+    public int Code { get; set; }
+
+    [Parameter]
+    public int Created { get; set; }
+}
