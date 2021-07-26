@@ -3,6 +3,7 @@ using HospitalManagementSystem.Server.Models;
 using HospitalManagementSystem.Server.Models.Enumerations;
 using HospitalManagementSystem.Server.Services.Interfaces;
 using HospitalManagementSystem.Shared.Appointments;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,6 +34,56 @@ namespace HospitalManagementSystem.Server.Services
             };
 
             await this.dbContext.Appointments.AddAsync(appointment);
+            await this.dbContext.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<AllAppointmentsByPatientIdViewModel>> GetAllAppointmentsByPatientId(string patientId)
+        {
+            return await this.dbContext.Appointments
+                .Where(a => a.PatientId == patientId)
+                .OrderBy(a => a.Id)
+                .Select(a => new AllAppointmentsByPatientIdViewModel
+                {
+                    Description = a.Description,
+                    Id = a.Id,
+                    Doctor = a.Doctor.FirstName + ' ' + a.Doctor.LastName,
+                    EndDate = a.EndDate,
+                    StartDate = a.StartDate,
+                    Status = a.Status.ToString(),
+                    Title = a.Title,
+                })
+                .ToListAsync();
+        }
+
+        public async Task<EditAppointmentInputModel> GetAppointmentToBeUpdatedAsync(int id)
+        {
+            return await this.dbContext.Appointments
+                .Where(a => a.Id == id)
+                .Select(a => new EditAppointmentInputModel
+                {
+                    Id = a.Id,
+                    PatientId = a.PatientId,
+                    Description = a.Description,
+                    DoctorId = a.DoctorId,
+                    EndDate = a.EndDate,
+                    StartDate = a.StartDate,
+                    Status = a.Status.ToString(),
+                    Title = a.Title,
+                })
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task UpdateAsync(int id, EditAppointmentInputModel input)
+        {
+            Appointment appointment = await this.dbContext.Appointments.FirstOrDefaultAsync(a => a.Id == id);
+
+            appointment.Description = input.Description;
+            appointment.DoctorId = input.DoctorId;
+            appointment.EndDate = input.EndDate;
+            appointment.StartDate = input.StartDate;
+            appointment.Status = (AppointmentStatus)Enum.Parse(typeof(AppointmentStatus), input.Status);
+            appointment.Title = input.Title;
+
             await this.dbContext.SaveChangesAsync();
         }
     }

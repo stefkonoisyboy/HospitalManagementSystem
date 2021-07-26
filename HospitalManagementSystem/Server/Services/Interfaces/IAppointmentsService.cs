@@ -9,5 +9,11 @@ namespace HospitalManagementSystem.Server.Services.Interfaces
     public interface IAppointmentsService
     {
         Task CreateAsync(CreateAppointmentInputModel input);
+
+        Task UpdateAsync(int id, EditAppointmentInputModel input);
+
+        Task<EditAppointmentInputModel> GetAppointmentToBeUpdatedAsync(int id);
+
+        Task<IEnumerable<AllAppointmentsByPatientIdViewModel>> GetAllAppointmentsByPatientId(string patientId);
     }
 }

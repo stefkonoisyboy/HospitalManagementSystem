@@ -1,5 +1,88 @@
 ﻿@page "/appointments"
 @inject Radzen.DialogService dialogService
+@inject HttpClient httpClient
+
+<MudDialog @bind-IsVisible="visible">
+    <TitleContent>
+        Add Appoinment
+        <MudDivider />
+    </TitleContent>
+    <DialogContent>
+        <EditForm Model="@input" OnValidSubmit="Submit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <MudCard>
+                <MudCardContent>
+                    <MudText Typo="Typo.h6">Select Doctor</MudText>
+                    <RadzenDropDown TValue="string" @bind-Value="input.DoctorId" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                    Data=@input.Doctors
+                                    TextProperty="FullName" ValueProperty="Id" />
+                    <MudTextField Label="Title" Placeholder="Title" HelperText="Min. 3 characters, Max. 30 characters"
+                                  @bind-Value="input.Title" For="@(() => input.Title)" />
+                    <RadzenDatePicker TValue="DateTime" @bind-Value="input.StartDate" Placeholder="Start Date" ShowTime="true" ShowSeconds="true" HoursStep="1.5" MinutesStep="5" SecondsStep="10" DateFormat="MM/dd/yyyy HH:mm" />
+                    <RadzenDatePicker TValue="DateTime" @bind-Value="input.EndDate" Placeholder="End Date" ShowTime="true" ShowSeconds="true" HoursStep="1.5" MinutesStep="5" SecondsStep="10" DateFormat="MM/dd/yyyy HH:mm" />
+                    <MudTextField Label="Description"
+                                  @bind-Value="input.Description" For="@(() => input.Description)" />
+                    <MudSelect T="string" @bind-Value="input.Status" Label="Status">
+                        <MudSelectItem Value="@("Waiting")" />
+                    </MudSelect>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudGrid>
+                        <MudItem xs="2">
+                            <MudButton OnClick="this.Cancel" Variant="Variant.Filled" Color="Color.Default" Class="ml-auto">Cancel</MudButton>
+                        </MudItem>
+                        <MudItem xs="6"></MudItem>
+                        <MudItem xs="2">
+                            <MudButton ButtonType="MudBlazor.ButtonType.Submit" Variant="Variant.Filled" Color="Color.Success" Class="ml-auto">Submit</MudButton>
+                        </MudItem>
+                    </MudGrid>
+                </MudCardActions>
+            </MudCard>
+        </EditForm>
+    </DialogContent>
+</MudDialog>
+
+<MudDialog @bind-IsVisible="visibleEdit">
+    <TitleContent>
+        Edit Appoinment
+        <MudDivider />
+    </TitleContent>
+    <DialogContent>
+        <EditForm Model="@editInput" OnValidSubmit="Edit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <MudCard>
+                <MudCardContent>
+                    <MudText Typo="Typo.h6">Select Doctor</MudText>
+                    <RadzenDropDown TValue="string" @bind-Value="editInput.DoctorId" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                    Data=@editInput.Doctors
+                                    TextProperty="FullName" ValueProperty="Id" />
+                    <MudTextField Label="Title" Placeholder="Title" HelperText="Min. 3 characters, Max. 30 characters"
+                                  @bind-Value="editInput.Title" For="@(() => editInput.Title)" />
+                    <RadzenDatePicker TValue="DateTime" @bind-Value="editInput.StartDate" Placeholder="Start Date" ShowTime="true" ShowSeconds="true" HoursStep="1.5" MinutesStep="5" SecondsStep="10" DateFormat="MM/dd/yyyy HH:mm" />
+                    <RadzenDatePicker TValue="DateTime" @bind-Value="editInput.EndDate" Placeholder="End Date" ShowTime="true" ShowSeconds="true" HoursStep="1.5" MinutesStep="5" SecondsStep="10" DateFormat="MM/dd/yyyy HH:mm" />
+                    <MudTextField Label="Description"
+                                  @bind-Value="editInput.Description" For="@(() => editInput.Description)" />
+                    <MudSelect T="string" @bind-Value="editInput.Status" Label="Status">
+                        <MudSelectItem Value="@("Waiting")" />
+                    </MudSelect>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudGrid>
+                        <MudItem xs="2">
+                            <MudButton OnClick="this.CancelEdit" Variant="Variant.Filled" Color="Color.Default" Class="ml-auto">Cancel</MudButton>
+                        </MudItem>
+                        <MudItem xs="6"></MudItem>
+                        <MudItem xs="2">
+                            <MudButton ButtonType="MudBlazor.ButtonType.Submit" Variant="Variant.Filled" Color="Color.Success" Class="ml-auto">Update</MudButton>
+                        </MudItem>
+                    </MudGrid>
+                </MudCardActions>
+            </MudCard>
+        </EditForm>
+    </DialogContent>
+</MudDialog>
 
 <MudGrid>
     <MudItem xs="12">
@@ -24,23 +107,69 @@
 @code {
     RadzenScheduler<AllAppointmentsByPatientIdViewModel> scheduler;
 
-    IList<AllAppointmentsByPatientIdViewModel> appointments = new List<AllAppointmentsByPatientIdViewModel>
+    IEnumerable<AllAppointmentsByPatientIdViewModel> appointments = new List<AllAppointmentsByPatientIdViewModel>();
+
+    private CreateAppointmentInputModel input = new CreateAppointmentInputModel();
+    private EditAppointmentInputModel editInput = new EditAppointmentInputModel();
+
+    private bool visible;
+    private void OpenDialog() => this.visible = true;
+    private void Cancel() => this.visible = false;
+
+    private bool visibleEdit;
+    private void OpenDialogEdit() => this.visibleEdit = true;
+    private void CancelEdit() => this.visibleEdit = false;
+
+    async Task Submit()
     {
-        new AllAppointmentsByPatientIdViewModel { StartDate = DateTime.Today.AddDays(-2), EndDate = DateTime.Today.AddDays(-2), Title = "Title" },
-    };
+        this.visible = false;
+        await this.httpClient.PostAsJsonAsync<CreateAppointmentInputModel>("Appointments/Create", input);
+        this.appointments = await this.httpClient.GetFromJsonAsync<IEnumerable<AllAppointmentsByPatientIdViewModel>>("Appointments/GetAllAppointmentsByPatientId");
+    }
+
+    async Task Edit()
+    {
+        this.visibleEdit = false;
+        await this.httpClient.PutAsJsonAsync<EditAppointmentInputModel>("Appointments/Edit", editInput);
+        this.appointments = await this.httpClient.GetFromJsonAsync<IEnumerable<AllAppointmentsByPatientIdViewModel>>("Appointments/GetAllAppointmentsByPatientId");
+    }
 
     async Task OnSlotSelect(SchedulerSlotSelectEventArgs args)
     {
-        
+        input.StartDate = args.Start;
+        input.EndDate = args.End;
+        this.OpenDialog();
     }
 
     async Task OnAppointmentSelect(SchedulerAppointmentSelectEventArgs<AllAppointmentsByPatientIdViewModel> args)
     {
-
+        this.editInput = await this.httpClient.GetFromJsonAsync<EditAppointmentInputModel>($"Appointments/Edit/{args.Data.Id}");
+        this.OpenDialogEdit();
     }
 
     void OnAppointmentRender(SchedulerAppointmentRenderEventArgs<AllAppointmentsByPatientIdViewModel> args)
     {
+        if (args.Data.Status == "Waiting")
+        {
+            args.Attributes["style"] = "background: red";
+        }
+        else if (args.Data.Status == "Finished")
+        {
+            args.Attributes["style"] = "background: blue";
+        }
+        else if (args.Data.Status == "Cancelled")
+        {
+            args.Attributes["style"] = "background: yellow";
+        }
+        else
+        {
+            args.Attributes["style"] = "background: green";
+        }
+    }
 
+    protected override async Task OnInitializedAsync()
+    {
+        this.input = await this.httpClient.GetFromJsonAsync<CreateAppointmentInputModel>("Appointments/Create");
+        this.appointments = await this.httpClient.GetFromJsonAsync<IEnumerable<AllAppointmentsByPatientIdViewModel>>("Appointments/GetAllAppointmentsByPatientId");
     }
 }

@@ -9,8 +9,9 @@ using System.Threading.Tasks;
 
 namespace HospitalManagementSystem.Shared.Appointments
 {
-    public class CreateAppointmentInputModel : IValidatableObject
+    public class CreateAppointmentInputModel
     {
+        [Display(Name = "Doctor")]
         [Required]
         public string DoctorId { get; set; }
 
@@ -23,22 +24,16 @@ namespace HospitalManagementSystem.Shared.Appointments
         [MaxLength(30)]
         public string Title { get; set; }
 
-        [StartDate]
+        [StartDate(ErrorMessage = "Start Date Should Be Greater Than Current Date!")]
+
         public DateTime StartDate { get; set; }
 
+        [StartDate(ErrorMessage = "End Date Should Be Greater Than Current Date!")]
         public DateTime EndDate { get; set; }
 
         public string Description { get; set; }
 
         [Required]
         public string Status { get; set; }
-
-        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
-        {
-            if (this.StartDate > this.EndDate)
-            {
-                yield return new ValidationResult("Start Date should be lower than End Date!");
-            }
-        }
     }
 }

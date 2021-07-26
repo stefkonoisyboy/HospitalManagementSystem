@@ -22,13 +22,29 @@ namespace HospitalManagementSystem.Server.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<AllDoctorsDropDownViewModel>>> Create()
+        public async Task<ActionResult<IEnumerable<AllAppointmentsByPatientIdViewModel>>> GetAllAppointmentsByPatientId()
+        {
+            string userId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            IEnumerable<AllAppointmentsByPatientIdViewModel> viewModel = await this.appointmentsService.GetAllAppointmentsByPatientId(userId);
+            return this.Ok(viewModel);
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<CreateAppointmentInputModel>> Create()
         {
             CreateAppointmentInputModel input = new CreateAppointmentInputModel
             {
                 Doctors = await this.usersService.GetAllDoctorsForDropDown(),
             };
 
+            return this.Ok(input);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<ActionResult<EditAppointmentInputModel>> Edit(int id)
+        {
+            EditAppointmentInputModel input = await this.appointmentsService.GetAppointmentToBeUpdatedAsync(id);
+            input.Doctors = await this.usersService.GetAllDoctorsForDropDown();
             return this.Ok(input);
         }
 
@@ -44,6 +60,20 @@ namespace HospitalManagementSystem.Server.Controllers
             string userId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
             input.PatientId = userId;
             await this.appointmentsService.CreateAsync(input);
+
+            return this.Ok();
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> Edit(EditAppointmentInputModel input)
+        {
+            if (!this.ModelState.IsValid)
+            {
+                input.Doctors = await this.usersService.GetAllDoctorsForDropDown();
+                return this.BadRequest(input);
+            }
+
+            await this.appointmentsService.UpdateAsync(input.Id, input);
 
             return this.Ok();
         }

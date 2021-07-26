@@ -8,6 +8,8 @@ namespace HospitalManagementSystem.Shared.Appointments
 {
     public class AllAppointmentsByPatientIdViewModel
     {
+        public int Id { get; set; }
+
         public string Doctor { get; set; }
 
         public string Title { get; set; }
