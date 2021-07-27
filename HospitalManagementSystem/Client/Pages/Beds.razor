@@ -1,0 +1,149 @@
+﻿@page "/beds/"
+@inject HttpClient httpClient
+
+<MudDialog @bind-IsVisible="visible">
+    <TitleContent>
+        <MudPaper Class="bg-info">
+            <MudText Typo="Typo.h6">
+                Bed Seat's Information
+            </MudText>
+        </MudPaper>
+    </TitleContent>
+    <DialogContent>
+        <div class="text-center">
+            <MudText>Seat Name: @this.modelById.Name</MudText>
+            <MudText>Floor Name: @this.modelById.Floor</MudText>
+            <MudText>
+                Rent/day:
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-currency-dollar text-danger" viewBox="0 0 16 16">
+                    <path d="M4 10.781c.148 1.667 1.513 2.85 3.591 3.003V15h1.043v-1.216c2.27-.179 3.678-1.438 3.678-3.3 0-1.59-.947-2.51-2.956-3.028l-.722-.187V3.467c1.122.11 1.879.714 2.07 1.616h1.47c-.166-1.6-1.54-2.748-3.54-2.875V1H7.591v1.233c-1.939.23-3.27 1.472-3.27 3.156 0 1.454.966 2.483 2.661 2.917l.61.162v4.031c-1.149-.17-1.94-.8-2.131-1.718H4zm3.391-3.836c-1.043-.263-1.6-.825-1.6-1.616 0-.944.704-1.641 1.8-1.828v3.495l-.2-.05zm1.591 1.872c1.287.323 1.852.859 1.852 1.769 0 1.097-.826 1.828-2.2 1.939V8.73l.348.086z" />
+                </svg>
+                @this.modelById.PricePerDay
+            </MudText>
+            <MudText>Room: @this.modelById.Room</MudText>
+            <MudText>Type: @this.modelById.Type</MudText>
+            <MudText>Status: @this.modelById.Status</MudText>
+            <MudText>
+                <img src="@this.modelById.RemoteImageUrl" alt="bedImage" />
+            </MudText>
+        </div>
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Filled" Color="Color.Info" OnClick="this.CloseDialog" Class="px-10">Close</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@if (this.viewModel.Count() == 0)
+{
+    <table class="table table-striped table-hover" style="width: 865px;">
+        <tr>
+            <td class="text-center">No data available in table</td>
+        </tr>
+    </table>
+}
+else
+{
+    <MudTable Items="@this.viewModel" Dense="@dense" Hover="@hover" Bordered="@bordered" Striped="@striped" Filter="new Func<AllBedsByFloorIdViewModel,bool>(FilterFunc)" HeaderClass="table-head-bordered" @bind-SelectedItem="selectedItem">
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">@this.viewModel.FirstOrDefault().Floor Bed Seats List</MudText>
+            <MudSpacer />
+            <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+        </ToolBarContent>
+        <HeaderContent>
+            <MudTh>
+                <MudTableSortLabel SortBy="new Func<AllBedsByFloorIdViewModel, object>(x=>x.Id)">No.</MudTableSortLabel>
+            </MudTh>
+            <MudTh>
+                <MudTableSortLabel SortBy="new Func<AllBedsByFloorIdViewModel, object>(x=>x.Name)">Bed Seat</MudTableSortLabel>
+            </MudTh>
+            <MudTh>
+                <MudTableSortLabel SortBy="new Func<AllBedsByFloorIdViewModel, object>(x=>x.Status)">Status</MudTableSortLabel>
+            </MudTh>
+            <MudTh>
+                <MudTableSortLabel SortBy="new Func<AllBedsByFloorIdViewModel, object>(x=>x.Type)">Bed Seat Type</MudTableSortLabel>
+            </MudTh>
+            <MudTh>
+                <MudTableSortLabel SortBy="new Func<AllBedsByFloorIdViewModel, object>(x=>x.Floor)">Floor</MudTableSortLabel>
+            </MudTh>
+            <MudTh>
+                <MudTableSortLabel SortBy="new Func<AllBedsByFloorIdViewModel, object>(x=>x.Room)">Room</MudTableSortLabel>
+            </MudTh>
+            <MudTh>Options</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="No.">@context.Id</MudTd>
+            <MudTd DataLabel="Bed Seat">@context.Name</MudTd>
+            <MudTd DataLabel="Status">
+                @if (context.Status == "Empty")
+                    {
+                    <span class="badge bg-success">@context.Status</span>
+                    }
+                    else
+                    {
+                    <span class="badge bg-danger">@context.Status</span>
+                    }
+            </MudTd>
+            <MudTd DataLabel="Bed Seat Type">@context.Type</MudTd>
+            <MudTd DataLabel="Floor">@context.Floor</MudTd>
+            <MudTd DataLabel="Room">@context.Room</MudTd>
+            <MudTd>
+                <MudButton OnClick="() => this.OpenDialog(context.Id)" Variant="Variant.Filled">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                        <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z" />
+                        <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z" />
+                    </svg>
+                    View
+                </MudButton>
+            </MudTd>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager />
+        </PagerContent>
+    </MudTable>
+}
+
+@code {
+    private IEnumerable<AllBedsByFloorIdViewModel> viewModel = new List<AllBedsByFloorIdViewModel>();
+    private BedByIdViewModel modelById = new BedByIdViewModel();
+
+    private bool visible;
+    private async Task OpenDialog(int id)
+    {
+        this.modelById = await this.httpClient.GetFromJsonAsync<BedByIdViewModel>($"Beds/GetById/{id}");
+        this.visible = true;
+    }
+    private void CloseDialog() => this.visible = false;
+
+    private bool dense = false;
+    private bool hover = true;
+    private bool striped = true;
+    private bool bordered = true;
+    private string searchString = "";
+    private AllBedsByFloorIdViewModel selectedItem = null;
+    private HashSet<AllBedsByFloorIdViewModel> selectedItems = new HashSet<AllBedsByFloorIdViewModel>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        this.viewModel = await this.httpClient.GetFromJsonAsync<IEnumerable<AllBedsByFloorIdViewModel>>($"Beds/GetAll");
+    }
+
+    private bool FilterFunc(AllBedsByFloorIdViewModel recipe)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (recipe.Id.ToString().Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (recipe.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (recipe.Status.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (recipe.Type.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (recipe.Room.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (recipe.Floor.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        return false;
+    }
+}  

@@ -10,6 +10,7 @@ namespace HospitalManagementSystem.Server.Models
         public Hospital()
         {
             this.Users = new HashSet<ApplicationUser>();
+            this.Floors = new HashSet<Floor>();
         }
 
         public int Id { get; set; }
@@ -17,5 +18,7 @@ namespace HospitalManagementSystem.Server.Models
         public string Name { get; set; }
 
         public virtual ICollection<ApplicationUser> Users { get; set; }
+
+        public virtual ICollection<Floor> Floors { get; set; }
     }
 }

@@ -1,6 +1,5 @@
 using CloudinaryDotNet;
 using HospitalManagementSystem.Server.Data;
-using HospitalManagementSystem.Server.Hubs;
 using HospitalManagementSystem.Server.Models;
 using HospitalManagementSystem.Server.Seeders;
 using HospitalManagementSystem.Server.Services;
@@ -48,13 +47,6 @@ namespace HospitalManagementSystem.Server
             services.AddAuthentication()
                 .AddIdentityServerJwt();
 
-            services.AddSignalR();
-            services.AddResponseCompression(opts =>
-            {
-                opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
-                    new[] { "application/octet-stream" });
-            });
-
             Account cloudinaryCredentials = new Account(
                this.Configuration["Cloudinary:CloudName"],
                this.Configuration["Cloudinary:ApiKey"],
@@ -74,6 +66,8 @@ namespace HospitalManagementSystem.Server
             services.AddTransient<IBloodTypesService, BloodTypesService>();
             services.AddTransient<IMessagesService, MessagesService>();
             services.AddTransient<IAppointmentsService, AppointmentsService>();
+            services.AddTransient<IBedsService, BedsService>();
+            services.AddTransient<IFloorsService, FloorsService>();
 
             services.AddControllersWithViews();
             services.AddRazorPages();
@@ -82,8 +76,6 @@ namespace HospitalManagementSystem.Server
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, UsersSeeder usersSeeder)
         {
-            app.UseResponseCompression();
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -112,7 +104,6 @@ namespace HospitalManagementSystem.Server
             {
                 endpoints.MapRazorPages();
                 endpoints.MapControllers();
-                endpoints.MapHub<OnlineHub>("/onlinehub");
                 endpoints.MapFallbackToFile("index.html");
             });
         }

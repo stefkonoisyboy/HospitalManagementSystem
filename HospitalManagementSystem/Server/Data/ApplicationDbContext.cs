@@ -52,6 +52,12 @@ namespace HospitalManagementSystem.Server.Data
 
         public virtual DbSet<Appointment> Appointments { get; set; }
 
+        public virtual DbSet<Bed> Beds { get; set; }
+
+        public virtual DbSet<Room> Rooms { get; set; }
+
+        public virtual DbSet<Floor> Floors { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
