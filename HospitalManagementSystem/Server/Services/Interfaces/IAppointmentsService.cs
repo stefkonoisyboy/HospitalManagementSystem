@@ -12,6 +12,8 @@ namespace HospitalManagementSystem.Server.Services.Interfaces
 
         Task UpdateAsync(int id, EditAppointmentInputModel input);
 
+        AppointmentsCountViewModel GetDifferentTypesOfAppointmentsCount();
+
         Task<EditAppointmentInputModel> GetAppointmentToBeUpdatedAsync(int id);
 
         Task<IEnumerable<AllAppointmentsByPatientIdViewModel>> GetAllAppointmentsByPatientId(string patientId);

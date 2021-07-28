@@ -18,6 +18,19 @@ namespace HospitalManagementSystem.Server.Services
             this.dbContext = dbContext;
         }
 
+        public async Task<IEnumerable<AllBloodTypesViewModel>> GetAll()
+        {
+            return await this.dbContext.BloodTypes
+                .OrderBy(bt => bt.Id)
+                .Select(bt => new AllBloodTypesViewModel
+                {
+                    Id = bt.Id,
+                    Name = bt.Name,
+                    Quantity = bt.Quantity,
+                })
+                .ToListAsync();
+        }
+
         public async Task<IEnumerable<AllBloodTypesDropDownViewModel>> GetAllBloodTypes()
         {
             return await this.dbContext.BloodTypes

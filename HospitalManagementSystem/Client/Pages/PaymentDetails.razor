@@ -1,5 +1,6 @@
 ﻿@page "/payments/details/{id:int}"
 @inject HttpClient httpClient
+@inject IJSRuntime JSRuntime
 
 <style>
     body {
@@ -8,134 +9,145 @@
 </style>
 
 <MudGrid>
-    <MudItem xs="2">
+    <MudItem xs="1">
         <h3>Invoice <strong class="text-black-50" style="font-size: 25px;">#@this.Id</strong></h3>
+    </MudItem>
+    <MudItem xs="1">
+        <MudButton OnClick="this.Print" Variant="Variant.Filled" Color="Color.Default">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-printer" viewBox="0 0 16 16">
+                <path d="M2.5 8a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z" />
+                <path d="M5 1a2 2 0 0 0-2 2v2H2a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h1v1a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2v-1h1a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-1V3a2 2 0 0 0-2-2H5zM4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2H4V3zm1 5a2 2 0 0 0-2 2v1H2a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v-1a2 2 0 0 0-2-2H5zm7 2v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1z" />
+            </svg>
+            Print
+        </MudButton>
     </MudItem>
 </MudGrid>
 
-<div class="bg-light">
-    <MudGrid>
-        <MudItem xs="4">
+<div id="printDiv">
+    <div class="bg-light">
+        <MudGrid>
+            <MudItem xs="4">
 
-        </MudItem>
-        <MudItem xs="8">
-            <img src="https://medical.san-solutions.net/img/logo2.png" alt="medical" />
-        </MudItem>
-    </MudGrid>
-    <div class="text-center" style="background-image: url(https://medical.san-solutions.net/img/back.png)">
-        <hr />
-        <h1 class="text-secondary">Invoice #@this.Id</h1>
-        <hr />
-    </div>
+            </MudItem>
+            <MudItem xs="8">
+                <img src="https://medical.san-solutions.net/img/logo2.png" alt="medical" />
+            </MudItem>
+        </MudGrid>
+        <div class="text-center" style="background-image: url(https://medical.san-solutions.net/img/back.png)">
+            <hr />
+            <h1 class="text-secondary">Invoice #@this.Id</h1>
+            <hr />
+        </div>
 
-    <MudGrid>
-        <MudItem xs="3">
-            <h2>Medical</h2>
-            <p>@this.viewModel.PatientAddress</p>
-            <p>@this.viewModel.PatientCity</p>
-            <p>@this.viewModel.PatientState</p>
-            <p>@this.viewModel.PatientPhone</p>
-            <p>@this.viewModel.PatientEmail</p>
-        </MudItem>
-        <MudItem xs="5">
-            @if (this.viewModel.Status == 1)
-            {
-                <img class="bg-light" src="https://medical.san-solutions.net/img/paid2.jpg" alt="paid" />
-            }
-            else
-            {
-                <img class="bg-light" src="https://tse4.mm.bing.net/th?id=OIP.7qpWMZu0baU7IJjTOVSyngAAAA&pid=Api&P=0&w=194&h=163" alt="unpaid" />
-            }
-        </MudItem>
-        <MudItem xs="4">
-            <MudGrid>
-                <MudItem xs="6">
-                    <p class="text-black-50">CLIENT</p>
-                </MudItem>
-                <MudItem xs="6">
-                    <p>@this.viewModel.Patient</p>
-                </MudItem>
-                <MudItem xs="6">
-                    <p class="text-black-50">ADDRESS</p>
-                </MudItem>
-                <MudItem xs="6">
-                    <p>@this.viewModel.PatientAddress</p>
-                </MudItem>
-                <MudItem xs="6">
-                    <p class="text-black-50">PHONE NUMBER</p>
-                </MudItem>
-                <MudItem xs="6">
-                    <p>@this.viewModel.PatientPhone</p>
-                </MudItem>
-                <MudItem xs="6">
-                    <p class="text-black-50">E-MAIL</p>
-                </MudItem>
-                <MudItem xs="6">
-                    <p>@this.viewModel.PatientEmail</p>
-                </MudItem>
-                <MudItem xs="6">
-                    <p class="text-black-50">DATE</p>
-                </MudItem>
-                <MudItem xs="6">
-                    <p>@this.viewModel.Date.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture)</p>
-                </MudItem>
-                <MudItem xs="6">
-                    <p class="text-black-50">DUE DATE</p>
-                </MudItem>
-                <MudItem xs="6">
-                    <p>@this.viewModel.DueDate.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture)</p>
-                </MudItem>
-            </MudGrid>
-        </MudItem>
-    </MudGrid>
+        <MudGrid>
+            <MudItem xs="3">
+                <h2>Medical</h2>
+                <p>@this.viewModel.PatientAddress</p>
+                <p>@this.viewModel.PatientCity</p>
+                <p>@this.viewModel.PatientState</p>
+                <p>@this.viewModel.PatientPhone</p>
+                <p>@this.viewModel.PatientEmail</p>
+            </MudItem>
+            <MudItem xs="5">
+                @if (this.viewModel.Status == 1)
+                {
+                    <img class="bg-light" src="https://medical.san-solutions.net/img/paid2.jpg" alt="paid" />
+                }
+                else
+                {
+                    <img class="bg-light" src="https://tse4.mm.bing.net/th?id=OIP.7qpWMZu0baU7IJjTOVSyngAAAA&pid=Api&P=0&w=194&h=163" alt="unpaid" />
+                }
+            </MudItem>
+            <MudItem xs="4">
+                <MudGrid>
+                    <MudItem xs="6">
+                        <p class="text-black-50">CLIENT</p>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <p>@this.viewModel.Patient</p>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <p class="text-black-50">ADDRESS</p>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <p>@this.viewModel.PatientAddress</p>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <p class="text-black-50">PHONE NUMBER</p>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <p>@this.viewModel.PatientPhone</p>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <p class="text-black-50">E-MAIL</p>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <p>@this.viewModel.PatientEmail</p>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <p class="text-black-50">DATE</p>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <p>@this.viewModel.Date.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture)</p>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <p class="text-black-50">DUE DATE</p>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <p>@this.viewModel.DueDate.ToString("MM/dd/yyyy", CultureInfo.InvariantCulture)</p>
+                    </MudItem>
+                </MudGrid>
+            </MudItem>
+        </MudGrid>
 
-    <table class="table table-bordered table-striped table-hover">
-        <thead>
-            <tr class="text-secondary">
-                <th>Product</th>
-                <th>Price</th>
-                <th>Quantity</th>
-                <th>Total</th>
-                <th>Discount%</th>
-                <th>Grand Total</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var product in this.viewModel.Products)
-            {
-            <tr>
-                <td>@product.Name</td>
-                <td>$ @product.Price.ToString("f2")</td>
-                <td>@product.Quantity.ToString("f2")</td>
-                <td>$ @product.Total.ToString("f2")</td>
-                <td>@product.Discount.ToString("f2")%</td>
-                <td>$ @product.GrandTotal.ToString("f2")</td>
-            </tr>
-            }
-        </tbody>
-        <tfoot class="table table-striped">
-            <tr>
-                <td class="text-right" colspan="5">Total</td>
-                <td class="text-right">$ @this.viewModel.Products.Sum(p => p.Total).ToString("f2")</td>
-            </tr>
-            <tr>
-                <td class="text-right" colspan="5">Discount</td>
-                <td class="text-right">$ @this.viewModel.Products.Sum(p => p.Total - p.GrandTotal).ToString("f2")</td>
-            </tr>
-            <tr style="background-color: rgba(0,0,0,.05) ">
-                <td class="text-right" colspan="5">
-                    <strong>Grand Total</strong>
-                </td>
-                <td class="text-right">
-                    <strong class="text-right">$ @this.viewModel.Products.Sum(p => p.GrandTotal).ToString("f2")</strong>
-                </td>
-            </tr>
-        </tfoot>
-    </table>
+        <table class="table table-bordered table-striped table-hover">
+            <thead>
+                <tr class="text-secondary">
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                    <th>Discount%</th>
+                    <th>Grand Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var product in this.viewModel.Products)
+                {
+                    <tr>
+                        <td>@product.Name</td>
+                        <td>$ @product.Price.ToString("f2")</td>
+                        <td>@product.Quantity.ToString("f2")</td>
+                        <td>$ @product.Total.ToString("f2")</td>
+                        <td>@product.Discount.ToString("f2")%</td>
+                        <td>$ @product.GrandTotal.ToString("f2")</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot class="table table-striped">
+                <tr>
+                    <td class="text-right" colspan="5">Total</td>
+                    <td class="text-right">$ @this.viewModel.Products.Sum(p => p.Total).ToString("f2")</td>
+                </tr>
+                <tr>
+                    <td class="text-right" colspan="5">Discount</td>
+                    <td class="text-right">$ @this.viewModel.Products.Sum(p => p.Total - p.GrandTotal).ToString("f2")</td>
+                </tr>
+                <tr style="background-color: rgba(0,0,0,.05) ">
+                    <td class="text-right" colspan="5">
+                        <strong>Grand Total</strong>
+                    </td>
+                    <td class="text-right">
+                        <strong class="text-right">$ @this.viewModel.Products.Sum(p => p.GrandTotal).ToString("f2")</strong>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
 
-    <div class="text-left">
-        <p>NOTICE:</p>
-        <p class="text-black-50">@this.viewModel.OtherInfo</p>
+        <div class="text-left">
+            <p>NOTICE:</p>
+            <p class="text-black-50">@this.viewModel.OtherInfo</p>
+        </div>
     </div>
 </div>
 
@@ -145,6 +157,11 @@
     protected override async Task OnInitializedAsync()
     {
         this.viewModel = await this.httpClient.GetFromJsonAsync<PaymentByIdViewModel>($"Payments/Details/{this.Id}");
+    }
+
+    public async Task Print()
+    {
+        await this.JSRuntime.InvokeVoidAsync("printDiv");
     }
 
     [Parameter]

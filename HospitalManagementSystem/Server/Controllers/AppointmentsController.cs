@@ -30,6 +30,13 @@ namespace HospitalManagementSystem.Server.Controllers
         }
 
         [HttpGet]
+        public ActionResult<AppointmentsCountViewModel> GetCounts()
+        {
+            AppointmentsCountViewModel viewModel = this.appointmentsService.GetDifferentTypesOfAppointmentsCount();
+            return this.Ok(viewModel);
+        }
+
+        [HttpGet]
         public async Task<ActionResult<CreateAppointmentInputModel>> Create()
         {
             CreateAppointmentInputModel input = new CreateAppointmentInputModel

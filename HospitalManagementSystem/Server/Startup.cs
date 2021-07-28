@@ -68,6 +68,7 @@ namespace HospitalManagementSystem.Server
             services.AddTransient<IAppointmentsService, AppointmentsService>();
             services.AddTransient<IBedsService, BedsService>();
             services.AddTransient<IFloorsService, FloorsService>();
+            services.AddTransient<IMedicinesService, MedicinesService>();
 
             services.AddControllersWithViews();
             services.AddRazorPages();

@@ -48,7 +48,10 @@
         </div>
         <MudNavLink Href="/dashboard" Icon="@Icons.Filled.Dashboard">Dashboard</MudNavLink>
         <MudNavLink Href="/mailbox" Icon="@Icons.Filled.Email">Mailbox</MudNavLink>
-        <MudNavLink Href="/appointments" Icon="@Icons.Filled.CalendarToday">Appointments</MudNavLink>
+        <MudNavLink Href="/appointments" Icon="@Icons.Filled.CalendarToday">
+            Appointments
+            <span class="badge bg-primary">@this.appointmentCounts.FinishedAppointments</span>
+        </MudNavLink>
         <MudNavGroup Title="Patients" Icon="@Icons.Filled.People">
             <MudNavLink Href="/doctors">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-circle" viewBox="0 0 16 16">
@@ -110,6 +113,7 @@
 
 @code {
     private CurrentUserNavMenuViewModel viewModel = new CurrentUserNavMenuViewModel();
+    private AppointmentsCountViewModel appointmentCounts = new AppointmentsCountViewModel();
 
     private string online = "Online";
     private string offline = "Offline";
@@ -128,5 +132,6 @@
         var authState = await this.authStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
         this.viewModel = await this.httpClient.GetFromJsonAsync<CurrentUserNavMenuViewModel>($"Users/GetCurrentUserNavMenu/{user.Identity.Name}");
+        this.appointmentCounts = await this.httpClient.GetFromJsonAsync<AppointmentsCountViewModel>("Appointments/GetCounts");
     }
 }

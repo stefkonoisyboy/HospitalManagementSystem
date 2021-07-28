@@ -9,5 +9,7 @@ namespace HospitalManagementSystem.Server.Services.Interfaces
     public interface IBloodTypesService
     {
         Task<IEnumerable<AllBloodTypesDropDownViewModel>> GetAllBloodTypes();
+
+        Task<IEnumerable<AllBloodTypesViewModel>> GetAll();
     }
 }

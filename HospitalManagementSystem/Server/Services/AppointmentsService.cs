@@ -73,6 +73,17 @@ namespace HospitalManagementSystem.Server.Services
                 .FirstOrDefaultAsync();
         }
 
+        public AppointmentsCountViewModel GetDifferentTypesOfAppointmentsCount()
+        {
+            return new AppointmentsCountViewModel
+            {
+                CancelledAppointments = this.dbContext.Appointments.Count(a => a.Status == AppointmentStatus.Cancelled),
+                WaitingAppointments = this.dbContext.Appointments.Count(a => a.Status == AppointmentStatus.Waiting),
+                FinishedAppointments = this.dbContext.Appointments.Count(a => a.Status == AppointmentStatus.Finished),
+                InProgressAppointments = this.dbContext.Appointments.Count(a => a.Status == AppointmentStatus.InProgress),
+            };
+        }
+
         public async Task UpdateAsync(int id, EditAppointmentInputModel input)
         {
             Appointment appointment = await this.dbContext.Appointments.FirstOrDefaultAsync(a => a.Id == id);

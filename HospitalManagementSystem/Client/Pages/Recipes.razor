@@ -66,6 +66,8 @@
     private IEnumerable<AllRecipesByUserIdViewModel> viewModel = new List<AllRecipesByUserIdViewModel>();
     private CurrentUserProfileViewModel currentUser = new CurrentUserProfileViewModel();
 
+    public RenderFragment htmlData;
+
     protected override async Task OnInitializedAsync()
     {
         this.viewModel = await this.httpClient.GetFromJsonAsync<IEnumerable<AllRecipesByUserIdViewModel>>("Recipes/AllByUserId");
@@ -91,7 +93,7 @@
         return false;
     }
 
-    void NavigateToDetails(int id)
+    public void NavigateToDetails(int id)
     {
         this.navigationManager.NavigateTo($"/recipes/details/{id}");
     }

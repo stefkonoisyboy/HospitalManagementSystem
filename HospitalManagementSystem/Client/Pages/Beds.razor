@@ -4,7 +4,7 @@
 <MudDialog @bind-IsVisible="visible">
     <TitleContent>
         <MudPaper Class="bg-info">
-            <MudText Typo="Typo.h6">
+            <MudText Class="text-center" Typo="Typo.h6">
                 Bed Seat's Information
             </MudText>
         </MudPaper>
@@ -45,7 +45,7 @@ else
 {
     <MudTable Items="@this.viewModel" Dense="@dense" Hover="@hover" Bordered="@bordered" Striped="@striped" Filter="new Func<AllBedsByFloorIdViewModel,bool>(FilterFunc)" HeaderClass="table-head-bordered" @bind-SelectedItem="selectedItem">
         <ToolBarContent>
-            <MudText Typo="Typo.h6">@this.viewModel.FirstOrDefault().Floor Bed Seats List</MudText>
+            <MudText Typo="Typo.h6">Bed Seats List</MudText>
             <MudSpacer />
             <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
         </ToolBarContent>

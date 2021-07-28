@@ -7,10 +7,20 @@
 @inject AuthenticationStateProvider authStateProvider
 
     <style>
-        #profileImage {
+        .profileImage {
             margin: 0 auto;
             width: 100px;
             height: 100px;
+            padding: 3px;
+            border: 3px solid #d2d6de;
+            border-radius: 50%;
+            max-width: 100%;
+        }
+
+        .menuImage {
+            margin: 0 auto;
+            width: 25px;
+            height: 25px;
             padding: 3px;
             border: 3px solid #d2d6de;
             border-radius: 50%;
@@ -22,17 +32,30 @@
     <Authorized>
         <MudMenu Direction="Direction.Bottom" OffsetY="true" FullWidth="true">
             <ActivatorContent>
-                <MudChip Icon="@Icons.Material.Filled.Person" Color="Color.Primary">@context.User.Identity.Name</MudChip>
+                @if (this.viewModel.ProfileImageUrl == null)
+                {
+                    <MudChip Color="Color.Primary">
+                        <img class="menuImage" src="https://medical.san-solutions.net/img/noavatar.jpg" alt="profileImage" />
+                        @context.User.Identity.Name
+                    </MudChip>
+                }
+                else
+                {
+                    <MudChip Color="Color.Primary">
+                        <img class="menuImage" src="@this.viewModel.ProfileImageUrl" alt="profileImage" />
+                        @context.User.Identity.Name
+                    </MudChip>
+                }
             </ActivatorContent>
             <ChildContent>
                 <div class="text-center">
                     @if (this.viewModel.ProfileImageUrl == null)
                     {
-                        <img id="profileImage" src="https://medical.san-solutions.net/img/noavatar.jpg" alt="profileImage" />
+                        <img class="profileImage" src="https://medical.san-solutions.net/img/noavatar.jpg" alt="profileImage" />
                     }
                     else
                     {
-                        <img id="profileImage" src="@this.viewModel.ProfileImageUrl" alt="profileImage" />
+                        <img class="profileImage" src="@this.viewModel.ProfileImageUrl" alt="profileImage" />
                     }
                 </div>
                 <strong class="text-center" style="font-size: 16px;">@this.viewModel.FullName - </strong>
