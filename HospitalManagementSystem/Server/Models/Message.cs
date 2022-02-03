@@ -20,6 +20,8 @@ namespace HospitalManagementSystem.Server.Models
 
         public DateTime CreatedOn { get; set; }
 
+        public bool IsSeen { get; set; }
+
         public string CreatorId { get; set; }
 
         public virtual ApplicationUser Creator { get; set; }

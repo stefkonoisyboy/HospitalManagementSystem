@@ -12,14 +12,14 @@
     }
 </style>
 
-<MudDialog @bind-IsVisible="visible">
+<MudDialog Style="width: 870px;" @bind-IsVisible="visible">
     <TitleContent>
         <MudText Typo="Typo.h6">
             Compose New Reply
         </MudText>
     </TitleContent>
     <DialogContent>
-        <div style="width: 870px;">
+        <div>
             <EditForm Model="@input" OnValidSubmit="Submit">
                 <ValidationSummary></ValidationSummary>
                 <DataAnnotationsValidator />
@@ -148,10 +148,13 @@
 @code {
     private ReceivedMessageByIdViewModel viewModel = new ReceivedMessageByIdViewModel();
     private CreateReplyInputModel input = new CreateReplyInputModel();
+    private MarkMessageAsSeenInputModel inputModel = new MarkMessageAsSeenInputModel();
 
     protected override async Task OnInitializedAsync()
     {
         this.viewModel = await this.httpClient.GetFromJsonAsync<ReceivedMessageByIdViewModel>($"Messages/GetReceivedMessageById/{this.Id}");
+        this.inputModel.IsSeen = true;
+        await this.httpClient.PutAsJsonAsync<MarkMessageAsSeenInputModel>($"Messages/MarkAsSeen/{this.Id}", inputModel);
     }
 
     async Task Submit()

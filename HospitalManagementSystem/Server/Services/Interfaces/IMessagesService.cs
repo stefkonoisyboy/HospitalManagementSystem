@@ -12,9 +12,13 @@ namespace HospitalManagementSystem.Server.Services.Interfaces
 
         Task CreateReplyAsync(CreateReplyInputModel input);
 
+        Task MarkAsSeenAsync(int id, MarkMessageAsSeenInputModel input);
+
         Task DeleteAsync(IEnumerable<int> messages);
 
         Task DeleteByIdAsync(int id);
+
+        int GetAllUnseenMessagesCount(string userId);
 
         Task<ReceivedMessageByIdViewModel> GetReceivedMessageByIdAsync(int id);
 
@@ -23,5 +27,7 @@ namespace HospitalManagementSystem.Server.Services.Interfaces
         Task<IEnumerable<AllMessagesByUserIdViewModel>> GetAllMessagesByReceiverIdAsync(string receiverId);
 
         Task<IEnumerable<AllMessagesByUserIdViewModel>> GetAllMessagesByCreatorIdAsync(string creatorId);
+
+        Task<IEnumerable<AllUnseenMessagesViewModel>> GetAllUnseenMessages(string userId);
     }
 }

@@ -44,6 +44,7 @@ namespace HospitalManagementSystem.Server.Services
                     Id = u.Id,
                     LastName = u.LastName,
                     IsActive = u.IsActive,
+                    ProfileImageRemoteUrl = u.ProfileImageRemoteUrl,
                 })
                 .ToListAsync();
         }

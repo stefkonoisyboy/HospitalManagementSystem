@@ -69,6 +69,9 @@ namespace HospitalManagementSystem.Server
             services.AddTransient<IBedsService, BedsService>();
             services.AddTransient<IFloorsService, FloorsService>();
             services.AddTransient<IMedicinesService, MedicinesService>();
+            services.AddTransient<IBlogPostsService, BlogPostsService>();
+            services.AddTransient<IBlogCategoriesService, BlogCategoriesService>();
+            services.AddTransient<ITagsService, TagsService>();
 
             services.AddControllersWithViews();
             services.AddRazorPages();

@@ -25,6 +25,7 @@
             border: 3px solid #d2d6de;
             border-radius: 50%;
             max-width: 100%;
+            
         }
     </style>
 
@@ -32,6 +33,48 @@
     <Authorized>
         <MudMenu Direction="Direction.Bottom" OffsetY="true" FullWidth="true">
             <ActivatorContent>
+                <MudMenu Icon="@Icons.Material.Filled.MailOutline" Direction="Direction.Left" OffsetX="true">
+                    <MudMenuItem OnClick="this.StateHasChanged">
+                        <MudText Align="Align.Left">You have @this.unseenMessages messages</MudText>
+                    </MudMenuItem>
+                    <MudDivider />
+                    @foreach (var message in this.allUnseenMessages)
+                    {
+                        <MudMenuItem OnClick="() => this.NavigateToMessageDetails(message.Id)">
+                            <MudGrid>
+                                <MudItem xs="8">
+                                   <MudGrid>
+                                       <MudItem xs="4">
+                                           @if (message.CreatorProfileImageUrl == null)
+                                           {
+                                               <img class="menuImage" src="https://medical.san-solutions.net/img/noavatar.jpg" style="width: 50px; height: 50px;" alt="profileImage" />
+                                           }
+                                           else
+                                           {
+                                               <img class="menuImage" src="@message.CreatorProfileImageUrl" style="width: 50px; height: 50px;" alt="profileImage" />
+                                           }
+                                       </MudItem>
+                                       <MudItem xs="4">
+                                           <p>@message.Subject</p>
+                                           <p class="text-black-50">@message.Content</p>
+                                       </MudItem>
+                                   </MudGrid>
+                                </MudItem>
+                                <MudItem xs="4">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clock" viewBox="0 0 16 16">
+                                        <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z" />
+                                        <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z" />
+                                    </svg>
+                                    @message.DifferenceBetweenNowAndCreatedOn
+                                </MudItem>
+                            </MudGrid>
+                        </MudMenuItem>
+                    }
+                    <MudMenuItem>
+                        <a href="/mailbox">See All Messages</a>
+                    </MudMenuItem>
+                </MudMenu>
+
                 @if (this.viewModel.ProfileImageUrl == null)
                 {
                     <MudChip Color="Color.Primary">
@@ -83,6 +126,8 @@
 @code{
     private CurrentUserViewModel viewModel = new CurrentUserViewModel();
     private UpdateUserStatusInputModel input = new UpdateUserStatusInputModel();
+    private int unseenMessages;
+    private IEnumerable<AllUnseenMessagesViewModel> allUnseenMessages = new List<AllUnseenMessagesViewModel>();
 
     private async Task BeginSignOut(MouseEventArgs args)
     {
@@ -102,6 +147,8 @@
         var authState = await this.authStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
         this.viewModel = await this.httpClient.GetFromJsonAsync<CurrentUserViewModel>($"Users/GetCurrentUser/{user.Identity.Name}");
+        this.unseenMessages = await this.httpClient.GetFromJsonAsync<int>("Messages/GetUnseenMessagesCount");
+        this.allUnseenMessages = await this.httpClient.GetFromJsonAsync<IEnumerable<AllUnseenMessagesViewModel>>("Messages/GetUnseenMessages");
 
         input.Username = user.Identity.Name;
         input.Status = true;
@@ -111,5 +158,10 @@
     void NavigateToProfile()
     {
         this.Navigation.NavigateTo("/profile");
+    }
+
+    void NavigateToMessageDetails(int id)
+    {
+        this.Navigation.NavigateTo($"/mailbox/messages/{id}");
     }
 }

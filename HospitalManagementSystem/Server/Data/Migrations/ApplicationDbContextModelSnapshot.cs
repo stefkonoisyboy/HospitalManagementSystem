@@ -219,6 +219,77 @@ namespace HospitalManagementSystem.Server.Data.Migrations
                     b.ToTable("Beds");
                 });
 
+            modelBuilder.Entity("HospitalManagementSystem.Server.Models.BlogCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BlogCategories");
+                });
+
+            modelBuilder.Entity("HospitalManagementSystem.Server.Models.BlogPost", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("BlogCategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Content")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatorId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("RemoteImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BlogCategoryId");
+
+                    b.HasIndex("CreatorId");
+
+                    b.ToTable("BlogPosts");
+                });
+
+            modelBuilder.Entity("HospitalManagementSystem.Server.Models.BlogPostTag", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("BlogPostId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TagId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BlogPostId");
+
+                    b.HasIndex("TagId");
+
+                    b.ToTable("BlogPostTags");
+                });
+
             modelBuilder.Entity("HospitalManagementSystem.Server.Models.BloodType", b =>
                 {
                     b.Property<int>("Id")
@@ -410,6 +481,9 @@ namespace HospitalManagementSystem.Server.Data.Migrations
                     b.Property<string>("CreatorId")
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<bool>("IsSeen")
+                        .HasColumnType("bit");
+
                     b.Property<int?>("ParentId")
                         .HasColumnType("int");
 
@@ -579,6 +653,21 @@ namespace HospitalManagementSystem.Server.Data.Migrations
                     b.HasIndex("FloorId");
 
                     b.ToTable("Rooms");
+                });
+
+            modelBuilder.Entity("HospitalManagementSystem.Server.Models.Tag", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Tags");
                 });
 
             modelBuilder.Entity("HospitalManagementSystem.Server.Models.Treatment", b =>
@@ -921,6 +1010,42 @@ namespace HospitalManagementSystem.Server.Data.Migrations
                     b.Navigation("Room");
                 });
 
+            modelBuilder.Entity("HospitalManagementSystem.Server.Models.BlogPost", b =>
+                {
+                    b.HasOne("HospitalManagementSystem.Server.Models.BlogCategory", "BlogCategory")
+                        .WithMany("BlogPosts")
+                        .HasForeignKey("BlogCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HospitalManagementSystem.Server.Models.ApplicationUser", "Creator")
+                        .WithMany("BlogPosts")
+                        .HasForeignKey("CreatorId");
+
+                    b.Navigation("BlogCategory");
+
+                    b.Navigation("Creator");
+                });
+
+            modelBuilder.Entity("HospitalManagementSystem.Server.Models.BlogPostTag", b =>
+                {
+                    b.HasOne("HospitalManagementSystem.Server.Models.BlogPost", "BlogPost")
+                        .WithMany("Tags")
+                        .HasForeignKey("BlogPostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HospitalManagementSystem.Server.Models.Tag", "Tag")
+                        .WithMany("BlogPosts")
+                        .HasForeignKey("TagId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("BlogPost");
+
+                    b.Navigation("Tag");
+                });
+
             modelBuilder.Entity("HospitalManagementSystem.Server.Models.DocumentDocumentation", b =>
                 {
                     b.HasOne("HospitalManagementSystem.Server.Models.Document", "Document")
@@ -1160,6 +1285,8 @@ namespace HospitalManagementSystem.Server.Data.Migrations
 
                     b.Navigation("AppointmentsSupervised");
 
+                    b.Navigation("BlogPosts");
+
                     b.Navigation("Documentations");
 
                     b.Navigation("MessagesCreated");
@@ -1177,6 +1304,16 @@ namespace HospitalManagementSystem.Server.Data.Migrations
                     b.Navigation("TreatmentsCreated");
 
                     b.Navigation("TreatmentsReceived");
+                });
+
+            modelBuilder.Entity("HospitalManagementSystem.Server.Models.BlogCategory", b =>
+                {
+                    b.Navigation("BlogPosts");
+                });
+
+            modelBuilder.Entity("HospitalManagementSystem.Server.Models.BlogPost", b =>
+                {
+                    b.Navigation("Tags");
                 });
 
             modelBuilder.Entity("HospitalManagementSystem.Server.Models.BloodType", b =>
@@ -1244,6 +1381,11 @@ namespace HospitalManagementSystem.Server.Data.Migrations
             modelBuilder.Entity("HospitalManagementSystem.Server.Models.Room", b =>
                 {
                     b.Navigation("Beds");
+                });
+
+            modelBuilder.Entity("HospitalManagementSystem.Server.Models.Tag", b =>
+                {
+                    b.Navigation("BlogPosts");
                 });
 #pragma warning restore 612, 618
         }

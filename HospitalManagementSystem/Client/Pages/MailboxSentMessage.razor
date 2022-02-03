@@ -75,10 +75,13 @@
 
 @code {
     private CreatedMessageByIdViewModel viewModel = new CreatedMessageByIdViewModel();
+    private MarkMessageAsSeenInputModel input = new MarkMessageAsSeenInputModel();
 
     protected override async Task OnInitializedAsync()
     {
         this.viewModel = await this.httpClient.GetFromJsonAsync<CreatedMessageByIdViewModel>($"Messages/GetCreatedMessageById/{this.Id}");
+        this.input.IsSeen = true;
+        await this.httpClient.PutAsJsonAsync<MarkMessageAsSeenInputModel>($"Messages/MarkAsSeen/{this.Id}", input);
     }
 
     async Task Delete()

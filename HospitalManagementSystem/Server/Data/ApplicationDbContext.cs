@@ -58,6 +58,14 @@ namespace HospitalManagementSystem.Server.Data
 
         public virtual DbSet<Floor> Floors { get; set; }
 
+        public virtual DbSet<Tag> Tags { get; set; }
+
+        public virtual DbSet<BlogPostTag> BlogPostTags { get; set; }
+
+        public virtual DbSet<BlogCategory> BlogCategories { get; set; }
+
+        public virtual DbSet<BlogPost> BlogPosts { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

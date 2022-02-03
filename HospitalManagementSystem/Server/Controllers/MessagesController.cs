@@ -36,6 +36,20 @@ namespace HospitalManagementSystem.Server.Controllers
             return this.Ok(viewModel);
         }
 
+        [HttpGet]
+        public ActionResult<int> GetUnseenMessagesCount()
+        {
+            string userId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            return this.Ok(this.messagesService.GetAllUnseenMessagesCount(userId)); 
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<AllUnseenMessagesViewModel>>> GetUnseenMessages()
+        {
+            string userId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            return this.Ok(await this.messagesService.GetAllUnseenMessages(userId));
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<ReceivedMessageByIdViewModel>> GetReceivedMessageById(int id)
         {
@@ -89,6 +103,13 @@ namespace HospitalManagementSystem.Server.Controllers
             input.CreatorId = userId;
             await this.messagesService.CreateReplyAsync(input);
 
+            return this.Ok();
+        }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult> MarkAsSeen(int id, MarkMessageAsSeenInputModel input)
+        {
+            await this.messagesService.MarkAsSeenAsync(id, input);
             return this.Ok();
         }
 

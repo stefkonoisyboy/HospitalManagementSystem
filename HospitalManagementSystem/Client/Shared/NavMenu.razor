@@ -43,11 +43,16 @@
             <p style="color: white">PUBLIC SITE</p>
         </div>
         <MudNavLink Href="/" Icon="@Icons.Filled.Home">Home</MudNavLink>
+        <MudNavLink Href="/about" Icon="@Icons.Filled.Eject">About</MudNavLink>
+        <MudNavLink Href="/blog" Icon="@Icons.Filled.PostAdd">Blog</MudNavLink>
         <div style="background-color: darkslategrey;">
             <p style="color: white">MAIN NAVIGATION</p>
         </div>
         <MudNavLink Href="/dashboard" Icon="@Icons.Filled.Dashboard">Dashboard</MudNavLink>
-        <MudNavLink Href="/mailbox" Icon="@Icons.Filled.Email">Mailbox</MudNavLink>
+        <MudNavLink Href="/mailbox" Icon="@Icons.Filled.Email">
+            Mailbox
+            <span class="badge bg-danger">@this.unseenMessages</span>
+        </MudNavLink>
         <MudNavLink Href="/appointments" Icon="@Icons.Filled.CalendarToday">
             Appointments
             <span class="badge bg-primary">@this.appointmentCounts.FinishedAppointments</span>
@@ -114,6 +119,7 @@
 @code {
     private CurrentUserNavMenuViewModel viewModel = new CurrentUserNavMenuViewModel();
     private AppointmentsCountViewModel appointmentCounts = new AppointmentsCountViewModel();
+    private int unseenMessages;
 
     private string online = "Online";
     private string offline = "Offline";
@@ -133,5 +139,6 @@
         var user = authState.User;
         this.viewModel = await this.httpClient.GetFromJsonAsync<CurrentUserNavMenuViewModel>($"Users/GetCurrentUserNavMenu/{user.Identity.Name}");
         this.appointmentCounts = await this.httpClient.GetFromJsonAsync<AppointmentsCountViewModel>("Appointments/GetCounts");
+        this.unseenMessages = await this.httpClient.GetFromJsonAsync<int>("Messages/GetUnseenMessagesCount");
     }
 }

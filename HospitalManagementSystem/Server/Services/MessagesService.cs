@@ -24,9 +24,10 @@ namespace HospitalManagementSystem.Server.Services
             Message message = new Message
             {
                 Content = input.Content,
-                Subject = input.Content,
+                Subject = input.Subject,
                 CreatorId = input.CreatorId,
                 CreatedOn = DateTime.UtcNow,
+                IsSeen = false,
             };
 
             await this.dbContext.Messages.AddAsync(message);
@@ -57,6 +58,7 @@ namespace HospitalManagementSystem.Server.Services
                 ParentId = input.ParentId,
                 CreatedOn = DateTime.UtcNow,
                 Subject = "Re: " + message.Subject,
+                IsSeen = false,
             };
 
             await this.dbContext.Messages.AddAsync(reply);
@@ -124,6 +126,28 @@ namespace HospitalManagementSystem.Server.Services
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<AllUnseenMessagesViewModel>> GetAllUnseenMessages(string userId)
+        {
+            return await this.dbContext.Messages
+                .Where(m => !m.IsSeen && m.Users.Any(u => u.UserId == userId))
+                .OrderByDescending(m => m.CreatedOn)
+                .Select(m => new AllUnseenMessagesViewModel
+                {
+                    Id = m.Id,
+                    Subject = m.Subject,
+                    Content = m.Content,
+                    CreatorProfileImageUrl = m.Creator.ProfileImageRemoteUrl,
+                    CreatedOn = m.CreatedOn,
+                })
+                .ToListAsync();
+        }
+
+        public int GetAllUnseenMessagesCount(string userId)
+        {
+            return this.dbContext.Messages
+                .Count(m => !m.IsSeen && m.Users.Any(u => u.UserId == userId));
+        }
+
         public async Task<CreatedMessageByIdViewModel> GetCreatedMessageByIdAsync(int id)
         {
             return await this.dbContext.Messages
@@ -153,6 +177,13 @@ namespace HospitalManagementSystem.Server.Services
                     Creator = m.Creator.FirstName + ' ' + m.Creator.LastName,
                 })
                 .FirstOrDefaultAsync();
+        }
+
+        public async Task MarkAsSeenAsync(int id, MarkMessageAsSeenInputModel input)
+        {
+            Message message = await this.dbContext.Messages.FirstOrDefaultAsync(m => m.Id == id);
+            message.IsSeen = input.IsSeen;
+            await this.dbContext.SaveChangesAsync();
         }
     }
 }

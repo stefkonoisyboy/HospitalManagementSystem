@@ -12,7 +12,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.WebUtilities" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0" />
-    <PackageReference Include="MudBlazor" Version="5.0.15" />
+    <PackageReference Include="MudBlazor" Version="5.0.13" />
     <PackageReference Include="Radzen.Blazor" Version="3.7.1" />
     <PackageReference Include="Syncfusion.Blazor.Calendars" Version="19.2.0.48" />
     <PackageReference Include="Syncfusion.Blazor.RichTextEditor" Version="19.2.0.48" />

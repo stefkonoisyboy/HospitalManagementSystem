@@ -21,5 +21,7 @@ namespace HospitalManagementSystem.Shared.Users
         public string Email { get; set; }
 
         public bool IsActive { get; set; }
+
+        public string ProfileImageRemoteUrl { get; set; }
     }
 }
