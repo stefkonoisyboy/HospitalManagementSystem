@@ -15,6 +15,7 @@
     }
 </style>
 
+
 <MudPaper Style="background-color: lightblue; position: relative; right: 15px;" Width="260px" Class="d-inline-flex py-3" Square="true">
     <MudNavMenu Class="mud-width-full">
         <MudText Style="color: white;" Typo="Typo.h6" Class="px-4 text-center">Medical</MudText>
@@ -48,15 +49,32 @@
         <div style="background-color: darkslategrey;">
             <p style="color: white">MAIN NAVIGATION</p>
         </div>
-        <MudNavLink Href="/dashboard" Icon="@Icons.Filled.Dashboard">Dashboard</MudNavLink>
+        @if (this.viewModel.Role == GlobalConstants.PatientRoleName)
+        {
+            <MudNavLink Href="/dashboard" Icon="@Icons.Filled.Dashboard">Dashboard</MudNavLink>
+        }
+        else if (this.viewModel.Role == GlobalConstants.DoctorRoleName)
+        {
+            <MudNavLink Href="/dashboard/doctor" Icon="@Icons.Filled.Dashboard">Dashboard</MudNavLink>
+        }
         <MudNavLink Href="/mailbox" Icon="@Icons.Filled.Email">
             Mailbox
             <span class="badge bg-danger">@this.unseenMessages</span>
         </MudNavLink>
-        <MudNavLink Href="/appointments" Icon="@Icons.Filled.CalendarToday">
-            Appointments
-            <span class="badge bg-primary">@this.appointmentCounts.FinishedAppointments</span>
-        </MudNavLink>
+        @if (this.viewModel.Role == GlobalConstants.PatientRoleName)
+        {
+            <MudNavLink Href="/appointments" Icon="@Icons.Filled.CalendarToday">
+                Appointments
+                <span class="badge bg-primary">@this.appointmentCounts.FinishedAppointments</span>
+            </MudNavLink>
+        }
+        else if (this.viewModel.Role == GlobalConstants.DoctorRoleName)
+        {
+            <MudNavLink Href="/appointments/doctor" Icon="@Icons.Filled.CalendarToday">
+                Appointments
+                <span class="badge bg-primary">@this.appointmentCounts.FinishedAppointments</span>
+            </MudNavLink>
+        }
         <MudNavGroup Title="Patients" Icon="@Icons.Filled.People">
             <MudNavLink Href="/doctors">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-circle" viewBox="0 0 16 16">

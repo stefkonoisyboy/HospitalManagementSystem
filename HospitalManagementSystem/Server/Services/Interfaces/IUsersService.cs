@@ -29,5 +29,7 @@ namespace HospitalManagementSystem.Server.Services.Interfaces
         Task<IEnumerable<ReceiversMessageDropDownViewModel>> GetAllUsersForDropDown();
 
         Task<IEnumerable<AllDoctorsDropDownViewModel>> GetAllDoctorsForDropDown();
+
+        Task<IEnumerable<AllPatientsDropDownViewModel>> GetAllPatientsForDropDown();
     }
 }

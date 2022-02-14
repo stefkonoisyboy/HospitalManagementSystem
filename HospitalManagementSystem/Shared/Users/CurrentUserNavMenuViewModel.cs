@@ -15,5 +15,7 @@ namespace HospitalManagementSystem.Shared.Users
         public string ProfileImageUrl { get; set; }
 
         public bool IsActive { get; set; }
+
+        public string Role { get; set; }
     }
 }

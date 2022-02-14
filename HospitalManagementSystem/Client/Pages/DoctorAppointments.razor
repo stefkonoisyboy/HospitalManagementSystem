@@ -1,4 +1,4 @@
-﻿@page "/appointments"
+﻿@page "/appointments/doctor"
 @inject Radzen.DialogService dialogService
 @inject HttpClient httpClient
 @attribute [Authorize]
@@ -14,9 +14,9 @@
             <ValidationSummary />
             <MudCard>
                 <MudCardContent>
-                    <MudText Typo="Typo.h6">Select Doctor</MudText>
-                    <RadzenDropDown TValue="string" @bind-Value="input.DoctorId" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                                    Data=@input.Doctors
+                    <MudText Typo="Typo.h6">Select Patient</MudText>
+                    <RadzenDropDown TValue="string" @bind-Value="input.PatientId" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                    Data=@input.Patients
                                     TextProperty="FullName" ValueProperty="Id" />
                     <MudTextField Label="Title" Placeholder="Title" HelperText="Min. 3 characters, Max. 30 characters"
                                   @bind-Value="input.Title" For="@(() => input.Title)" />
@@ -26,6 +26,7 @@
                                   @bind-Value="input.Description" For="@(() => input.Description)" />
                     <MudSelect T="string" @bind-Value="input.Status" Label="Status">
                         <MudSelectItem Value="@("Waiting")" />
+                        <MudSelectItem Value="@("InProgress")" />
                     </MudSelect>
                 </MudCardContent>
                 <MudCardActions>
@@ -56,8 +57,8 @@
             <MudCard>
                 <MudCardContent>
                     <MudText Typo="Typo.h6">Select Doctor</MudText>
-                    <RadzenDropDown TValue="string" @bind-Value="editInput.DoctorId" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
-                                    Data=@editInput.Doctors
+                    <RadzenDropDown TValue="string" @bind-Value="editInput.PatientId" AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                    Data=@editInput.Patients
                                     TextProperty="FullName" ValueProperty="Id" />
                     <MudTextField Label="Title" Placeholder="Title" HelperText="Min. 3 characters, Max. 30 characters"
                                   @bind-Value="editInput.Title" For="@(() => editInput.Title)" />
@@ -67,6 +68,7 @@
                                   @bind-Value="editInput.Description" For="@(() => editInput.Description)" />
                     <MudSelect T="string" @bind-Value="editInput.Status" Label="Status">
                         <MudSelectItem Value="@("Waiting")" />
+                        <MudSelectItem Value="@("InProgress")" />
                     </MudSelect>
                 </MudCardContent>
                 <MudCardActions>
@@ -76,14 +78,7 @@
                         </MudItem>
                         <MudItem xs="6"></MudItem>
                         <MudItem xs="2">
-                            @if (editInput.CreatorId == editInput.PatientId)
-                            {
-                                <MudButton ButtonType="MudBlazor.ButtonType.Submit" Variant="Variant.Filled" Color="Color.Success" Class="ml-auto">Update</MudButton>
-                            }
-                            else
-                            {
-                                <MudButton Disabled="true" ButtonType="MudBlazor.ButtonType.Submit" Variant="Variant.Filled" Color="Color.Success" Class="ml-auto">Update</MudButton>
-                            }
+                            <MudButton ButtonType="MudBlazor.ButtonType.Submit" Variant="Variant.Filled" Color="Color.Success" Class="ml-auto">Update</MudButton>
                         </MudItem>
                     </MudGrid>
                 </MudCardActions>
@@ -102,7 +97,7 @@
     <MudItem Class="bg-warning" xs="2">Cancelled</MudItem>
     <MudItem xs="4"></MudItem>
     <MudItem xs="12">
-        <RadzenScheduler TItem="AllAppointmentsByPatientIdViewModel" Data=@appointments StartProperty="StartDate" EndProperty="EndDate"
+        <RadzenScheduler TItem="AllAppointmentsByDoctorIdViewModel" Data=@appointments StartProperty="StartDate" EndProperty="EndDate"
                          TextProperty="Title" SelectedIndex="2"
                          SlotSelect=@OnSlotSelect AppointmentSelect=@OnAppointmentSelect AppointmentRender=@OnAppointmentRender style="height: 768px;">
             <RadzenDayView />
@@ -113,12 +108,12 @@
 </MudGrid>
 
 @code {
-    RadzenScheduler<AllAppointmentsByPatientIdViewModel> scheduler;
+    RadzenScheduler<AllAppointmentsByDoctorIdViewModel> scheduler;
 
-    IEnumerable<AllAppointmentsByPatientIdViewModel> appointments = new List<AllAppointmentsByPatientIdViewModel>();
+    IEnumerable<AllAppointmentsByDoctorIdViewModel> appointments = new List<AllAppointmentsByDoctorIdViewModel>();
 
-    private CreateAppointmentInputModel input = new CreateAppointmentInputModel();
-    private EditAppointmentInputModel editInput = new EditAppointmentInputModel();
+    private DoctorCreateAppointmentInputModel input = new DoctorCreateAppointmentInputModel();
+    private DoctorEditAppointmentInputModel editInput = new DoctorEditAppointmentInputModel();
 
     private bool visible;
     private void OpenDialog() => this.visible = true;
@@ -131,15 +126,15 @@
     async Task Submit()
     {
         this.visible = false;
-        await this.httpClient.PostAsJsonAsync<CreateAppointmentInputModel>("Appointments/Create", input);
-        this.appointments = await this.httpClient.GetFromJsonAsync<IEnumerable<AllAppointmentsByPatientIdViewModel>>("Appointments/GetAllAppointmentsByPatientId");
+        await this.httpClient.PostAsJsonAsync<DoctorCreateAppointmentInputModel>("Appointments/DoctorCreate", input);
+        this.appointments = await this.httpClient.GetFromJsonAsync<IEnumerable<AllAppointmentsByDoctorIdViewModel>>("Appointments/GetAllAppointmentsByDoctorId");
     }
 
     async Task Edit()
     {
         this.visibleEdit = false;
-        await this.httpClient.PutAsJsonAsync<EditAppointmentInputModel>("Appointments/Edit", editInput);
-        this.appointments = await this.httpClient.GetFromJsonAsync<IEnumerable<AllAppointmentsByPatientIdViewModel>>("Appointments/GetAllAppointmentsByPatientId");
+        await this.httpClient.PutAsJsonAsync<DoctorEditAppointmentInputModel>("Appointments/DoctorEdit", editInput);
+        this.appointments = await this.httpClient.GetFromJsonAsync<IEnumerable<AllAppointmentsByDoctorIdViewModel>>("Appointments/GetAllAppointmentsByDoctorId");
     }
 
     async Task OnSlotSelect(SchedulerSlotSelectEventArgs args)
@@ -149,13 +144,13 @@
         this.OpenDialog();
     }
 
-    async Task OnAppointmentSelect(SchedulerAppointmentSelectEventArgs<AllAppointmentsByPatientIdViewModel> args)
+    async Task OnAppointmentSelect(SchedulerAppointmentSelectEventArgs<AllAppointmentsByDoctorIdViewModel> args)
     {
-        this.editInput = await this.httpClient.GetFromJsonAsync<EditAppointmentInputModel>($"Appointments/Edit/{args.Data.Id}");
+        this.editInput = await this.httpClient.GetFromJsonAsync<DoctorEditAppointmentInputModel>($"Appointments/DoctorEdit/{args.Data.Id}");
         this.OpenDialogEdit();
     }
 
-    void OnAppointmentRender(SchedulerAppointmentRenderEventArgs<AllAppointmentsByPatientIdViewModel> args)
+    void OnAppointmentRender(SchedulerAppointmentRenderEventArgs<AllAppointmentsByDoctorIdViewModel> args)
     {
         if (args.Data.Status == "Waiting")
         {
@@ -177,7 +172,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        this.input = await this.httpClient.GetFromJsonAsync<CreateAppointmentInputModel>("Appointments/Create");
-        this.appointments = await this.httpClient.GetFromJsonAsync<IEnumerable<AllAppointmentsByPatientIdViewModel>>("Appointments/GetAllAppointmentsByPatientId");
+        this.input = await this.httpClient.GetFromJsonAsync<DoctorCreateAppointmentInputModel>("Appointments/DoctorCreate");
+        this.appointments = await this.httpClient.GetFromJsonAsync<IEnumerable<AllAppointmentsByDoctorIdViewModel>>("Appointments/GetAllAppointmentsByDoctorId");
     }
 }

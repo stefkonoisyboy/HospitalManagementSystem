@@ -1,6 +1,8 @@
 ﻿using HospitalManagementSystem.Server.Services.Interfaces;
+using HospitalManagementSystem.Shared;
 using HospitalManagementSystem.Shared.Appointments;
 using HospitalManagementSystem.Shared.Users;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -21,11 +23,21 @@ namespace HospitalManagementSystem.Server.Controllers
             this.usersService = usersService;
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<AllAppointmentsByPatientIdViewModel>>> GetAllAppointmentsByPatientId()
         {
             string userId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
             IEnumerable<AllAppointmentsByPatientIdViewModel> viewModel = await this.appointmentsService.GetAllAppointmentsByPatientId(userId);
+            return this.Ok(viewModel);
+        }
+
+        [Authorize]
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<AllAppointmentsByDoctorIdViewModel>>> GetAllAppointmentsByDoctorId()
+        {
+            string userId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            IEnumerable<AllAppointmentsByDoctorIdViewModel> viewModel = await this.appointmentsService.GetAllAppointmentsByDoctorIdViewModel(userId);
             return this.Ok(viewModel);
         }
 
@@ -36,6 +48,7 @@ namespace HospitalManagementSystem.Server.Controllers
             return this.Ok(viewModel);
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<ActionResult<CreateAppointmentInputModel>> Create()
         {
@@ -47,6 +60,19 @@ namespace HospitalManagementSystem.Server.Controllers
             return this.Ok(input);
         }
 
+        [Authorize]
+        [HttpGet]
+        public async Task<ActionResult<DoctorCreateAppointmentInputModel>> DoctorCreate()
+        {
+            DoctorCreateAppointmentInputModel input = new DoctorCreateAppointmentInputModel
+            {
+                Patients = await this.usersService.GetAllPatientsForDropDown(),
+            };
+
+            return this.Ok(input);
+        }
+
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<ActionResult<EditAppointmentInputModel>> Edit(int id)
         {
@@ -55,6 +81,16 @@ namespace HospitalManagementSystem.Server.Controllers
             return this.Ok(input);
         }
 
+        [Authorize]
+        [HttpGet("{id}")]
+        public async Task<ActionResult<DoctorEditAppointmentInputModel>> DoctorEdit(int id)
+        {
+            DoctorEditAppointmentInputModel input = await this.appointmentsService.GetDoctorAppointmentToBeUpdatedAsync(id);
+            input.Patients = await this.usersService.GetAllPatientsForDropDown();
+            return this.Ok(input);
+        }
+
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Create(CreateAppointmentInputModel input)
         {
@@ -66,11 +102,31 @@ namespace HospitalManagementSystem.Server.Controllers
 
             string userId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
             input.PatientId = userId;
+            input.CreatorId = userId;
             await this.appointmentsService.CreateAsync(input);
 
             return this.Ok();
         }
 
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> DoctorCreate(DoctorCreateAppointmentInputModel input)
+        {
+            if (!this.ModelState.IsValid)
+            {
+                input.Patients = await this.usersService.GetAllPatientsForDropDown();
+                return this.BadRequest(input);
+            }
+
+            string userId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            input.DoctorId = userId;
+            input.CreatorId = userId;
+            await this.appointmentsService.DoctorCreateAsync(input);
+
+            return this.Ok();
+        }
+
+        [Authorize]
         [HttpPut]
         public async Task<IActionResult> Edit(EditAppointmentInputModel input)
         {
@@ -81,6 +137,21 @@ namespace HospitalManagementSystem.Server.Controllers
             }
 
             await this.appointmentsService.UpdateAsync(input.Id, input);
+
+            return this.Ok();
+        }
+
+        [Authorize]
+        [HttpPut]
+        public async Task<IActionResult> DoctorEdit(DoctorEditAppointmentInputModel input)
+        {
+            if (!this.ModelState.IsValid)
+            {
+                input.Patients = await this.usersService.GetAllPatientsForDropDown();
+                return this.BadRequest(input);
+            }
+
+            await this.appointmentsService.DoctorUpdateAsync(input.Id, input);
 
             return this.Ok();
         }

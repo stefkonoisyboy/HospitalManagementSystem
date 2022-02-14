@@ -9,15 +9,15 @@ using System.Threading.Tasks;
 
 namespace HospitalManagementSystem.Shared.Appointments
 {
-    public class CreateAppointmentInputModel
+    public class DoctorCreateAppointmentInputModel
     {
         [Display(Name = "Doctor")]
         [Required]
-        public string DoctorId { get; set; }
-
-        public IEnumerable<AllDoctorsDropDownViewModel> Doctors { get; set; }
-
         public string PatientId { get; set; }
+
+        public IEnumerable<AllPatientsDropDownViewModel> Patients { get; set; }
+
+        public string DoctorId { get; set; }
 
         public string CreatorId { get; set; }
 

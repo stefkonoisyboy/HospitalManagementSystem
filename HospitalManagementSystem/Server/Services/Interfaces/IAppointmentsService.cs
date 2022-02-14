@@ -10,12 +10,20 @@ namespace HospitalManagementSystem.Server.Services.Interfaces
     {
         Task CreateAsync(CreateAppointmentInputModel input);
 
+        Task DoctorCreateAsync(DoctorCreateAppointmentInputModel input);
+
         Task UpdateAsync(int id, EditAppointmentInputModel input);
+
+        Task DoctorUpdateAsync(int id, DoctorEditAppointmentInputModel input);
 
         AppointmentsCountViewModel GetDifferentTypesOfAppointmentsCount();
 
         Task<EditAppointmentInputModel> GetAppointmentToBeUpdatedAsync(int id);
 
+        Task<DoctorEditAppointmentInputModel> GetDoctorAppointmentToBeUpdatedAsync(int id);
+
         Task<IEnumerable<AllAppointmentsByPatientIdViewModel>> GetAllAppointmentsByPatientId(string patientId);
+
+        Task<IEnumerable<AllAppointmentsByDoctorIdViewModel>> GetAllAppointmentsByDoctorIdViewModel(string doctorId);
     }
 }

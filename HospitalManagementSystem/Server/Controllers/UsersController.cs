@@ -1,5 +1,4 @@
-﻿using CMS.Membership;
-using CMS.SiteProvider;
+﻿
 using HospitalManagementSystem.Server.Models;
 using HospitalManagementSystem.Server.Services.Interfaces;
 using HospitalManagementSystem.Shared;
@@ -31,7 +30,7 @@ namespace HospitalManagementSystem.Server.Controllers
         public async Task<ActionResult<CurrentUserViewModel>> GetCurrentUser(string username)
         {
             CurrentUserViewModel viewModel = await this.usersService.GetCurrentUserInfoByUsernameAsync(username);
-            return viewModel;
+            return this.Ok(viewModel);
         }
 
         [HttpGet("{username}")]

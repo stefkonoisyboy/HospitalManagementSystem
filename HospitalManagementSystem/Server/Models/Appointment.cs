@@ -20,6 +20,10 @@ namespace HospitalManagementSystem.Server.Models
 
         public string DoctorId { get; set; }
 
+        public string CreatorId { get; set; }
+
+        public virtual ApplicationUser Creator { get; set; }
+
         public virtual ApplicationUser Doctor { get; set; }
 
         public string PatientId { get; set; }

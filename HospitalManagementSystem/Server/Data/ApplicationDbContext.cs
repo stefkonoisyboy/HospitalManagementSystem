@@ -117,6 +117,12 @@ namespace HospitalManagementSystem.Server.Data
                 .WithMany(p => p.Appointments)
                 .HasForeignKey(f => f.PatientId)
                 .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<Appointment>()
+               .HasOne(a => a.Creator)
+               .WithMany(p => p.AppointmentsCreated)
+               .HasForeignKey(f => f.CreatorId)
+               .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

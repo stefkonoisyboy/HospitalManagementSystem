@@ -1,5 +1,4 @@
-﻿using CMS.Membership;
-using CMS.SiteProvider;
+﻿
 using HospitalManagementSystem.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

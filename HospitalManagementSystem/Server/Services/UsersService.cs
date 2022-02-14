@@ -62,6 +62,19 @@ namespace HospitalManagementSystem.Server.Services
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<AllPatientsDropDownViewModel>> GetAllPatientsForDropDown()
+        {
+            return await this.dbContext.Users
+                .Where(u => u.Role == GlobalConstants.PatientRoleName)
+                .OrderBy(u => u.FirstName + ' ' + u.LastName)
+                .Select(u => new AllPatientsDropDownViewModel
+                {
+                    Id = u.Id,
+                    FullName = u.FirstName + ' ' + u.LastName,
+                })
+                .ToListAsync();
+        }
+
         public async Task<IEnumerable<ReceiversMessageDropDownViewModel>> GetAllUsersForDropDown()
         {
             return await this.dbContext.Users
@@ -124,6 +137,7 @@ namespace HospitalManagementSystem.Server.Services
                     LastName = u.LastName,
                     IsActive = u.IsActive,
                     ProfileImageUrl = u.ProfileImageRemoteUrl,
+                    Role = u.Role,
                 })
                 .FirstOrDefaultAsync();
         }
