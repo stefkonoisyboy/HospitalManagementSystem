@@ -8,5 +8,6 @@ namespace HospitalManagementSystem.Shared.Users
 {
     public class AllPatientsDropDownViewModel : AllDoctorsDropDownViewModel
     {
+        public string PhoneNumber { get; set; }
     }
 }

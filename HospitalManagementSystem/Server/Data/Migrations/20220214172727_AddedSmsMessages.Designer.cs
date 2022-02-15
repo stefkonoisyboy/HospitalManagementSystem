@@ -4,14 +4,16 @@ using HospitalManagementSystem.Server.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HospitalManagementSystem.Server.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220214172727_AddedSmsMessages")]
+    partial class AddedSmsMessages
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -667,27 +669,16 @@ namespace HospitalManagementSystem.Server.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatorId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("From")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Text")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("To")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CreatorId");
 
                     b.ToTable("SmsMessages");
                 });
@@ -1238,15 +1229,6 @@ namespace HospitalManagementSystem.Server.Data.Migrations
                     b.Navigation("Floor");
                 });
 
-            modelBuilder.Entity("HospitalManagementSystem.Server.Models.SmsMessage", b =>
-                {
-                    b.HasOne("HospitalManagementSystem.Server.Models.ApplicationUser", "Creator")
-                        .WithMany("SmsMessages")
-                        .HasForeignKey("CreatorId");
-
-                    b.Navigation("Creator");
-                });
-
             modelBuilder.Entity("HospitalManagementSystem.Server.Models.Treatment", b =>
                 {
                     b.HasOne("HospitalManagementSystem.Server.Models.ApplicationUser", "Doctor")
@@ -1355,8 +1337,6 @@ namespace HospitalManagementSystem.Server.Data.Migrations
                     b.Navigation("RecipesCreated");
 
                     b.Navigation("RecipesReceived");
-
-                    b.Navigation("SmsMessages");
 
                     b.Navigation("TreatmentsCreated");
 

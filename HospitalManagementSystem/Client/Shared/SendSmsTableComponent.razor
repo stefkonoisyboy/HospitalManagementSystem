@@ -1,0 +1,74 @@
+﻿@inject HttpClient httpClient
+@inject NavigationManager navigationManager
+
+<MudTable Items="@this.viewModel" Dense="@dense" Hover="@hover" Bordered="@bordered" Striped="@striped" Filter="new Func<AllSmsMessagesByCreatorIdViewModel,bool>(FilterFunc)" HeaderClass="table-head-bordered" FooterClass="table-foot-bordered" @bind-SelectedItem="selectedItem">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Sent Messages</MudText>
+        <MudSpacer />
+        <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<AllSmsMessagesByCreatorIdViewModel, object>(x=>x.Id)">S_ID</MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<AllSmsMessagesByCreatorIdViewModel, object>(x=>x.PhoneNumber)">Phone Number</MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<AllSmsMessagesByCreatorIdViewModel, object>(x=>x.Title)">Title</MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<AllSmsMessagesByCreatorIdViewModel, object>(x=>x.Text)">Message</MudTableSortLabel>
+        </MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="S_ID">@context.Id</MudTd>
+        <MudTd DataLabel="Phone Number">@context.PhoneNumber</MudTd>
+        <MudTd DataLabel="Title">@context.Title</MudTd>
+        <MudTd DataLabel="Message">@context.Text</MudTd>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>
+
+@code {
+    private bool dense = false;
+    private bool hover = true;
+    private bool striped = true;
+    private bool bordered = true;
+    private string searchString = "";
+    private AllSmsMessagesByCreatorIdViewModel selectedItem = null;
+    private HashSet<AllSmsMessagesByCreatorIdViewModel> selectedItems = new HashSet<AllSmsMessagesByCreatorIdViewModel>();
+
+    private IEnumerable<AllSmsMessagesByCreatorIdViewModel> viewModel = new List<AllSmsMessagesByCreatorIdViewModel>();
+    private CurrentUserProfileViewModel currentUser = new CurrentUserProfileViewModel();
+
+    public RenderFragment htmlData;
+
+    protected override async Task OnInitializedAsync()
+    {
+        this.viewModel = await this.httpClient.GetFromJsonAsync<IEnumerable<AllSmsMessagesByCreatorIdViewModel>>("SmsMessages/GetAllByCreatorId");
+        this.currentUser = await this.httpClient.GetFromJsonAsync<CurrentUserProfileViewModel>("Users/GetProfileInfo");
+    }
+
+    private bool FilterFunc(AllSmsMessagesByCreatorIdViewModel recipe)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (recipe.Id.ToString().Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (recipe.PhoneNumber.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (recipe.Title.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (recipe.Text.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        return false;
+    }
+
+    public void NavigateToDetails(int id)
+    {
+        this.navigationManager.NavigateTo($"/recipes/details/{id}");
+    }
+}

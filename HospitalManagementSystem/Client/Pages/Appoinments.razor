@@ -2,6 +2,7 @@
 @inject Radzen.DialogService dialogService
 @inject HttpClient httpClient
 @attribute [Authorize]
+@inject ISnackbar snackbar
 
 <MudDialog @bind-IsVisible="visible">
     <TitleContent>
@@ -133,6 +134,7 @@
         this.visible = false;
         await this.httpClient.PostAsJsonAsync<CreateAppointmentInputModel>("Appointments/Create", input);
         this.appointments = await this.httpClient.GetFromJsonAsync<IEnumerable<AllAppointmentsByPatientIdViewModel>>("Appointments/GetAllAppointmentsByPatientId");
+        this.snackbar.Add("Appointment successfully created!", Severity.Success);
     }
 
     async Task Edit()
@@ -140,6 +142,7 @@
         this.visibleEdit = false;
         await this.httpClient.PutAsJsonAsync<EditAppointmentInputModel>("Appointments/Edit", editInput);
         this.appointments = await this.httpClient.GetFromJsonAsync<IEnumerable<AllAppointmentsByPatientIdViewModel>>("Appointments/GetAllAppointmentsByPatientId");
+        this.snackbar.Add("Appointment successfully updated!", Severity.Success);
     }
 
     async Task OnSlotSelect(SchedulerSlotSelectEventArgs args)

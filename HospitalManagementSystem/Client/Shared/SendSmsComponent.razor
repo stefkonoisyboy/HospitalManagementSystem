@@ -1,0 +1,64 @@
+﻿@inject HttpClient httpClient
+@inject NavigationManager navigationManager
+@inject ISnackbar snackbar
+
+<body class="bg-light">
+    <MudPaper class="bg-white" style="box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;">
+        <MudContainer Style="padding: 30px;">
+            <EditForm Model="@input" OnValidSubmit="Submit">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <MudCard>
+                    <MudCardContent Style="border: 2px solid #EAEAEA; border-top: 3px solid #F39C12; padding: 30px;">
+                        <MudText Typo="Typo.h6">Send SMS</MudText>
+                        <hr />
+                        <MudGrid>
+                            <MudItem xs="6">
+                                <MudText Typo="Typo.h6">Or:</MudText>
+                                <RadzenDropDown TValue="string" @bind-Value="input.PatientId"  AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive"
+                                                Data=@input.Patients
+                                                TextProperty="FullName" ValueProperty="Id" />
+                            </MudItem>
+                            <MudItem xs="6">
+                                <MudTextField Label="Title" Placeholder="Title" HelperText="Min. 5 characters, Max. 50 characters"
+                                              @bind-Value="input.Title" For="@(() => input.Title)" />
+                            </MudItem>
+                        </MudGrid>
+                        <MudGrid>
+                            <MudItem xs="12">
+                                <MudTextField Label="Message" Placeholder="Enter ..." Variant="Variant.Outlined" HelperText="Min. 10 characters" @bind-Value="input.Text" For="@(() => input.Text)" Lines="3" />
+                            </MudItem>
+                        </MudGrid>
+                    </MudCardContent>
+                    <MudCardActions>
+                        <MudGrid>
+                            <MudItem xs="2">
+                                <MudButton ButtonType="MudBlazor.ButtonType.Submit" Variant="Variant.Filled" Color="Color.Success" Class="ml-auto">Send</MudButton>
+                            </MudItem>
+                        </MudGrid>
+                    </MudCardActions>
+                </MudCard>
+            </EditForm>
+        </MudContainer>
+    </MudPaper>
+</body>
+
+@code {
+    private SmsMessageInputModel input = new SmsMessageInputModel();
+
+    protected override async Task OnInitializedAsync()
+    {
+        this.input = await this.httpClient.GetFromJsonAsync<SmsMessageInputModel>("SmsMessages/Create");
+    }
+
+    async Task Submit()
+    {
+        var response = await this.httpClient.PostAsJsonAsync<SmsMessageInputModel>("SmsMessages/Create", this.input);
+        string message = "SMS successfully sent!";
+        if (response.IsSuccessStatusCode)
+        {
+            this.snackbar.Add("SMS successfully sent!", Severity.Success);
+        }
+        this.navigationManager.NavigateTo("/");
+    }
+}

@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Vonage;
+using Vonage.Request;
 
 namespace HospitalManagementSystem.Server.Controllers
 {
@@ -101,6 +103,32 @@ namespace HospitalManagementSystem.Server.Controllers
             }
 
             string userId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            string from = this.usersService.GetPhoneNumberByUserId(userId);
+            string to = this.usersService.GetPhoneNumberByUserId(input.DoctorId);
+
+            try
+            {
+
+                var credentials = Credentials.FromApiKeyAndSecret(
+        "9e66f8c5",
+        "GzKGcpFOVeT4PV6a"
+        );
+
+                var vonageClient = new VonageClient(credentials);
+
+                var response = vonageClient.SmsClient.SendAnSms(new Vonage.Messaging.SendSmsRequest()
+                {
+                    To = to,
+                    From = from,
+                    Text = "Your appointment is ready! Log into your account to see more details!",
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception: " + ex.Message);
+                Console.WriteLine("To: " + to);
+            }
+
             input.PatientId = userId;
             input.CreatorId = userId;
             await this.appointmentsService.CreateAsync(input);
@@ -119,6 +147,32 @@ namespace HospitalManagementSystem.Server.Controllers
             }
 
             string userId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            string from = this.usersService.GetPhoneNumberByUserId(userId);
+            string to = this.usersService.GetPhoneNumberByUserId(input.PatientId);
+
+            try
+            {
+
+                var credentials = Credentials.FromApiKeyAndSecret(
+        "9e66f8c5",
+        "GzKGcpFOVeT4PV6a"
+        );
+
+                var vonageClient = new VonageClient(credentials);
+
+                var response = vonageClient.SmsClient.SendAnSms(new Vonage.Messaging.SendSmsRequest()
+                {
+                    To = to,
+                    From = from,
+                    Text = "Your appointment is ready! Log into your account to see more details!",
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception: " + ex.Message);
+                Console.WriteLine("To: " + to);
+            }
+
             input.DoctorId = userId;
             input.CreatorId = userId;
             await this.appointmentsService.DoctorCreateAsync(input);
@@ -136,6 +190,33 @@ namespace HospitalManagementSystem.Server.Controllers
                 return this.BadRequest(input);
             }
 
+            string userId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            string from = this.usersService.GetPhoneNumberByUserId(userId);
+            string to = this.usersService.GetPhoneNumberByUserId(input.DoctorId);
+
+            try
+            {
+
+                var credentials = Credentials.FromApiKeyAndSecret(
+        "9e66f8c5",
+        "GzKGcpFOVeT4PV6a"
+        );
+
+                var vonageClient = new VonageClient(credentials);
+
+                var response = vonageClient.SmsClient.SendAnSms(new Vonage.Messaging.SendSmsRequest()
+                {
+                    To = to,
+                    From = from,
+                    Text = "Your appointment was updated! Log into your account to see more details!",
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception: " + ex.Message);
+                Console.WriteLine("To: " + to);
+            }
+
             await this.appointmentsService.UpdateAsync(input.Id, input);
 
             return this.Ok();
@@ -149,6 +230,33 @@ namespace HospitalManagementSystem.Server.Controllers
             {
                 input.Patients = await this.usersService.GetAllPatientsForDropDown();
                 return this.BadRequest(input);
+            }
+
+            string userId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            string from = this.usersService.GetPhoneNumberByUserId(userId);
+            string to = this.usersService.GetPhoneNumberByUserId(input.PatientId);
+
+            try
+            {
+
+                var credentials = Credentials.FromApiKeyAndSecret(
+        "9e66f8c5",
+        "GzKGcpFOVeT4PV6a"
+        );
+
+                var vonageClient = new VonageClient(credentials);
+
+                var response = vonageClient.SmsClient.SendAnSms(new Vonage.Messaging.SendSmsRequest()
+                {
+                    To = to,
+                    From = from,
+                    Text = "Your appointment was updated! Log into your account to see more details!",
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception: " + ex.Message);
+                Console.WriteLine("To: " + to);
             }
 
             await this.appointmentsService.DoctorUpdateAsync(input.Id, input);

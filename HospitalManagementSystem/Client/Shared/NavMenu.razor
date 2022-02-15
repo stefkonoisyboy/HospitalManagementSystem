@@ -75,6 +75,12 @@
                 <span class="badge bg-primary">@this.appointmentCounts.FinishedAppointments</span>
             </MudNavLink>
         }
+        @if (this.viewModel.Role == GlobalConstants.DoctorRoleName)
+        {
+            <MudNavLink Href="/doctor/sms" Icon="@Icons.Filled.PhoneAndroid">
+                SMS Notifications
+            </MudNavLink>
+        }
         <MudNavGroup Title="Patients" Icon="@Icons.Filled.People">
             <MudNavLink Href="/doctors">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-circle" viewBox="0 0 16 16">

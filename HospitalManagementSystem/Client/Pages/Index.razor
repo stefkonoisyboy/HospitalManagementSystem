@@ -256,6 +256,9 @@
     [Parameter]
     public bool IsAlertable { get; set; }
 
+    [Parameter]
+    public string Message { get; set; }
+
     private IEnumerable<AllLatestBlogPostsViewModel> blogPosts = new List<AllLatestBlogPostsViewModel>();
     private IEnumerable<AllDoctorsViewModel> doctors = new List<AllDoctorsViewModel>();
 

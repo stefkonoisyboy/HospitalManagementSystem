@@ -12,6 +12,8 @@ namespace HospitalManagementSystem.Server.Services.Interfaces
 
         Task UpdateStatusAsync(UpdateUserStatusInputModel input);
 
+        string GetPhoneNumberByUserId(string userId);
+
         Task<EditCurrentUserInfoInputModel> GetCurrentUserInfoToBeUpdated(string id);
 
         Task<CurrentUserViewModel> GetCurrentUserInfoByUsernameAsync(string username);

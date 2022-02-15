@@ -66,6 +66,8 @@ namespace HospitalManagementSystem.Server.Data
 
         public virtual DbSet<BlogPost> BlogPosts { get; set; }
 
+        public virtual DbSet<SmsMessage> SmsMessages { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

@@ -71,6 +71,7 @@ namespace HospitalManagementSystem.Server.Services
                 {
                     Id = u.Id,
                     FullName = u.FirstName + ' ' + u.LastName,
+                    PhoneNumber = u.PhoneNumber,
                 })
                 .ToListAsync();
         }
@@ -187,6 +188,13 @@ namespace HospitalManagementSystem.Server.Services
                     ProfileImageUrl = u.ProfileImageRemoteUrl,
                 })
                 .FirstOrDefaultAsync();
+        }
+
+        public string GetPhoneNumberByUserId(string userId)
+        {
+            return this.dbContext.Users
+                .FirstOrDefault(u => u.Id == userId)
+                .PhoneNumber;
         }
 
         public async Task UpdateAsync(string id, EditCurrentUserInfoInputModel input)
