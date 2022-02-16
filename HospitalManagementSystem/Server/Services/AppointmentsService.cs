@@ -38,6 +38,13 @@ namespace HospitalManagementSystem.Server.Services
             await this.dbContext.SaveChangesAsync();
         }
 
+        public async Task DeleteAsync(int id)
+        {
+            Appointment appointment = await this.dbContext.Appointments.FirstOrDefaultAsync(a => a.Id == id);
+            this.dbContext.Appointments.Remove(appointment);
+            await this.dbContext.SaveChangesAsync();
+        }
+
         public async Task DoctorCreateAsync(DoctorCreateAppointmentInputModel input)
         {
             Appointment appointment = new Appointment

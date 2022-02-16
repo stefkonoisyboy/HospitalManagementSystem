@@ -25,6 +25,7 @@ namespace HospitalManagementSystem.Server.Models
             this.AppointmentsCreated = new HashSet<Appointment>();
             this.BlogPosts = new HashSet<BlogPost>();
             this.SmsMessages = new HashSet<SmsMessage>();
+            this.Expenses = new HashSet<Expense>();
         }
 
         public string FirstName { get; set; }
@@ -100,5 +101,7 @@ namespace HospitalManagementSystem.Server.Models
         public virtual ICollection<BlogPost> BlogPosts { get; set; }
 
         public virtual ICollection<SmsMessage> SmsMessages { get; set; }
+
+        public virtual ICollection<Expense> Expenses { get; set; }
     }
 }

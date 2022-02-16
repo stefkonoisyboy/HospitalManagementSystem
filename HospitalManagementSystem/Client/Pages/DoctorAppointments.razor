@@ -33,7 +33,7 @@
                 <MudCardActions>
                     <MudGrid>
                         <MudItem xs="2">
-                            <MudButton OnClick="this.Cancel" Variant="Variant.Filled" Color="Color.Default" Class="ml-auto">Cancel</MudButton>
+                            <MudButton OnClick="this.CancelEdit" Variant="Variant.Filled" Color="Color.Default" Class="ml-auto">Cancel</MudButton>
                         </MudItem>
                         <MudItem xs="6"></MudItem>
                         <MudItem xs="2">
@@ -74,12 +74,14 @@
                 </MudCardContent>
                 <MudCardActions>
                     <MudGrid>
-                        <MudItem xs="2">
-                            <MudButton OnClick="this.CancelEdit" Variant="Variant.Filled" Color="Color.Default" Class="ml-auto">Cancel</MudButton>
+                        <MudItem xs="4">
+                            <MudButton OnClick="this.Cancel" Variant="Variant.Filled" Color="Color.Default" Class="ml-auto">Cancel</MudButton>
                         </MudItem>
-                        <MudItem xs="6"></MudItem>
-                        <MudItem xs="2">
-                            <MudButton ButtonType="MudBlazor.ButtonType.Submit" Variant="Variant.Filled" Color="Color.Success" Class="ml-auto">Update</MudButton>
+                        <MudItem xs="4">
+                            <MudButton OnClick="() => this.Delete(this.editInput.Id)" Variant="Variant.Filled" Color="Color.Error" Class="ml-auto">Delete</MudButton>
+                        </MudItem>
+                        <MudItem xs="4">
+                            <MudButton ButtonType="MudBlazor.ButtonType.Submit" Variant="Variant.Filled" Color="Color.Success" Class="ml-auto">Submit</MudButton>
                         </MudItem>
                     </MudGrid>
                 </MudCardActions>
@@ -138,6 +140,18 @@
         await this.httpClient.PutAsJsonAsync<DoctorEditAppointmentInputModel>("Appointments/DoctorEdit", editInput);
         this.snackbar.Add("Appointment successfully updated!", Severity.Success);
         this.appointments = await this.httpClient.GetFromJsonAsync<IEnumerable<AllAppointmentsByDoctorIdViewModel>>("Appointments/GetAllAppointmentsByDoctorId");
+    }
+
+    async Task Delete(int id)
+    {
+        this.visibleEdit = false;
+        HttpResponseMessage responseMessage = await this.httpClient.DeleteAsync($"Appointments/Delete/{id}");
+        this.appointments = await this.httpClient.GetFromJsonAsync<IEnumerable<AllAppointmentsByDoctorIdViewModel>>("Appointments/GetAllAppointmentsByDoctorId");
+
+        if (responseMessage.IsSuccessStatusCode)
+        {
+            this.snackbar.Add("Appointment successfully deleted!", Severity.Success);
+        }
     }
 
     async Task OnSlotSelect(SchedulerSlotSelectEventArgs args)

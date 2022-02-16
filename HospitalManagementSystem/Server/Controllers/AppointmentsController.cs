@@ -263,5 +263,13 @@ namespace HospitalManagementSystem.Server.Controllers
 
             return this.Ok();
         }
+
+        [Authorize]
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> Delete(int id)
+        {
+            await this.appointmentsService.DeleteAsync(id);
+            return this.Ok();
+        }
     }
 }

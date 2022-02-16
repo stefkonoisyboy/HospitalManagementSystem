@@ -68,6 +68,8 @@ namespace HospitalManagementSystem.Server.Data
 
         public virtual DbSet<SmsMessage> SmsMessages { get; set; }
 
+        public virtual DbSet<Expense> Expenses { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

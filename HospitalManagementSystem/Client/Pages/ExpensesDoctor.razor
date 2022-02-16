@@ -1,0 +1,110 @@
+﻿@page "/doctor/expenses"
+@inject HttpClient httpClient
+@inject NavigationManager navigationManager
+@inject ISnackbar snackbar
+
+<MudButton OnClick="this.NavigateToAddExpenses" Class="mb-3 w-25" Variant="Variant.Filled" Color="Color.Info">
+    Add Expense
+</MudButton>
+
+<MudTable Style="box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;" Items="@this.viewModel" Dense="@dense" Hover="@hover" Bordered="@bordered" Striped="@striped" Filter="new Func<AllExpensesByCreatorIdViewModel,bool>(FilterFunc)" @bind-SelectedItem="selectedItem" HeaderClass="table-head-bordered" FooterClass="table-foot-bordered" CustomFooter="true">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Expenses</MudText>
+        <MudSpacer />
+        <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<AllExpensesByCreatorIdViewModel, object>(x=>x.Id)">ID</MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<AllExpensesByCreatorIdViewModel, object>(x=>x.Name)">Name</MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<AllExpensesByCreatorIdViewModel, object>(x=>x.Description)">Description</MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<AllExpensesByCreatorIdViewModel, object>(x=>x.Price)">Price</MudTableSortLabel>
+        </MudTh>
+        <MudTh>Options</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="ID">@context.Id</MudTd>
+        <MudTd DataLabel="Name">@context.Name</MudTd>
+        <MudTd DataLabel="Description">@context.Description</MudTd>
+        <MudTd DataLabel="Price">@context.Price.ToString("f2")</MudTd>
+        <MudTd>
+            <MudButton OnClick="() => this.NavigateToEditExpense(context.Id)" Variant="Variant.Filled" Color="Color.Primary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                    <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z" />
+                    <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z" />
+                </svg>
+                Edit
+            </MudButton>
+            <MudButton OnClick="() => this.Delete(context.Id)" Variant="Variant.Filled" Color="Color.Error">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+                    <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z" />
+                </svg>
+                Delete
+            </MudButton>
+        </MudTd>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>
+
+@code {
+    private bool dense = false;
+    private bool hover = true;
+    private bool striped = true;
+    private bool bordered = true;
+    private string searchString = "";
+    private AllExpensesByCreatorIdViewModel selectedItem = null;
+    private HashSet<AllExpensesByCreatorIdViewModel> selectedItems = new HashSet<AllExpensesByCreatorIdViewModel>();
+
+    private IEnumerable<AllExpensesByCreatorIdViewModel> viewModel = new List<AllExpensesByCreatorIdViewModel>();
+    private CurrentUserProfileViewModel currentUser = new CurrentUserProfileViewModel();
+
+    protected override async Task OnInitializedAsync()
+    {
+        this.viewModel = await this.httpClient.GetFromJsonAsync<IEnumerable<AllExpensesByCreatorIdViewModel>>("Expenses/GetAllByCreatorId");
+        this.currentUser = await this.httpClient.GetFromJsonAsync<CurrentUserProfileViewModel>("Users/GetProfileInfo");
+    }
+
+    private bool FilterFunc(AllExpensesByCreatorIdViewModel payment)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (payment.Id.ToString().Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (payment.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (payment.Description.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (payment.Price.ToString("f2").Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        return false;
+    }
+
+    void NavigateToAddExpenses()
+    {
+        this.navigationManager.NavigateTo("/doctor/expenses/add");
+    }
+
+    void NavigateToEditExpense(int id)
+    {
+        this.navigationManager.NavigateTo($"/doctor/expenses/edit/{id}");
+    }
+
+    async Task Delete(int id)
+    {
+        HttpResponseMessage httpResponseMessage = await this.httpClient.DeleteAsync($"Expenses/Delete/{id}");
+        this.viewModel = await this.httpClient.GetFromJsonAsync<IEnumerable<AllExpensesByCreatorIdViewModel>>("Expenses/GetAllByCreatorId");
+
+        if (httpResponseMessage.IsSuccessStatusCode)
+        {
+            this.snackbar.Add("Expense successfully deleted!", Severity.Success);
+        }
+    }
+}

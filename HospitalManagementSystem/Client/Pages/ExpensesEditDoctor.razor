@@ -1,0 +1,153 @@
+﻿@page "/doctor/expenses/edit/{id:int}"
+
+@inject HttpClient httpClient
+@inject NavigationManager navigationManager
+@inject ISnackbar snackbar
+
+<MudGrid>
+    <MudItem xs="3">
+        <MudButton OnClick="this.NavigateToExpensesList" Class="mb-3 w-100" Variant="Variant.Filled" Color="Color.Success">Expenses List</MudButton>
+    </MudItem>
+    <MudItem xs="3">
+        <MudButton OnClick="this.NavigateToAddExpenses" Class="mb-3 w-100" Variant="Variant.Filled" Color="Color.Info">Add Expense</MudButton>
+    </MudItem>
+</MudGrid>
+
+<MudGrid>
+    <MudItem xs="7">
+        <MudPaper Class="bg-white" Style="box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px; border: 2px solid #EAEAEA; border-top: 3px solid #D6DAE1;">
+            <MudContainer Style="padding: 10px;">
+                <EditForm Model="@input" OnValidSubmit="Submit">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+                    <MudCard>
+                        <MudCardContent>
+                            <MudText Typo="Typo.h6">Edit Expenses</MudText>
+                            <MudGrid>
+                                <MudItem xs="12">
+                                    <MudTextField Label="Name" Placeholder="Name" HelperText="Min. 5 characters, Max. 50 characters"
+                                                  @bind-Value="input.Name" For="@(() => input.Name)" />
+                                </MudItem>
+                            </MudGrid>
+                            <MudGrid>
+                                <MudItem xs="12">
+                                    <MudTextField Label="Description" Variant="Variant.Outlined" @bind-Value="input.Description" For="@(() => input.Description)" Lines="3" />
+                                </MudItem>
+                            </MudGrid>
+                            <MudGrid>
+                                <MudItem xs="12">
+                                    <MudTextField Label="Price" Placeholder="Ex: 99.99"
+                                                  @bind-Value="input.Price" For="@(() => input.Price)" />
+                                </MudItem>
+                            </MudGrid>
+                        </MudCardContent>
+                        <MudCardActions>
+                            <MudGrid>
+                                <MudItem xs="2">
+                                    <MudButton ButtonType="MudBlazor.ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Submit</MudButton>
+                                </MudItem>
+                            </MudGrid>
+                        </MudCardActions>
+                    </MudCard>
+                </EditForm>
+            </MudContainer>
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="5">
+        <MudTable Style="box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px; border: 2px solid #EAEAEA; border-top: 3px solid #D6DAE1;" Items="@this.viewModel" Dense="@dense" Hover="@hover" Bordered="@bordered" Striped="@striped" Filter="new Func<AllExpensesByCreatorIdViewModel,bool>(FilterFunc)" @bind-SelectedItem="selectedItem" HeaderClass="table-head-bordered" FooterClass="table-foot-bordered" CustomFooter="true">
+            <ToolBarContent>
+                <MudText Typo="Typo.h6">Expenses</MudText>
+                <MudSpacer />
+                <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+            </ToolBarContent>
+            <HeaderContent>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<AllExpensesByCreatorIdViewModel, object>(x=>x.Id)">#</MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel SortBy="new Func<AllExpensesByCreatorIdViewModel, object>(x=>x.Name)">Expenses</MudTableSortLabel>
+                </MudTh>
+                <MudTh>Options</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="#">@context.Id</MudTd>
+                <MudTd DataLabel="Expenses">@context.Name</MudTd>
+                <MudTd>
+                    <MudButton OnClick="() => this.NavigateToEditExpense(context.Id)" Variant="Variant.Filled" Color="Color.Primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-fill" viewBox="0 0 16 16">
+                            <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z" />
+                            <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z" />
+                        </svg>
+                        Edit
+                    </MudButton>
+                </MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager />
+            </PagerContent>
+        </MudTable>
+    </MudItem>
+</MudGrid>
+
+@code {
+    private bool dense = false;
+    private bool hover = true;
+    private bool striped = true;
+    private bool bordered = true;
+    private string searchString = "";
+    private AllExpensesByCreatorIdViewModel selectedItem = null;
+    private HashSet<AllExpensesByCreatorIdViewModel> selectedItems = new HashSet<AllExpensesByCreatorIdViewModel>();
+
+    private CreateExpenseInputModel input = new CreateExpenseInputModel();
+    private IEnumerable<AllExpensesByCreatorIdViewModel> viewModel = new List<AllExpensesByCreatorIdViewModel>();
+    private CurrentUserProfileViewModel currentUser = new CurrentUserProfileViewModel();
+
+    protected override async Task OnInitializedAsync()
+    {
+        this.viewModel = await this.httpClient.GetFromJsonAsync<IEnumerable<AllExpensesByCreatorIdViewModel>>("Expenses/GetAllByCreatorId");
+        this.input = await this.httpClient.GetFromJsonAsync<EditExpenseInputModel>($"Expenses/Edit/{this.Id}");
+        this.currentUser = await this.httpClient.GetFromJsonAsync<CurrentUserProfileViewModel>("Users/GetProfileInfo");
+    }
+
+    async Task Submit()
+    {
+        HttpResponseMessage responseMessage = await this.httpClient.PutAsJsonAsync<CreateExpenseInputModel>($"Expenses/Edit/{this.Id}", input);
+        this.viewModel = await this.httpClient.GetFromJsonAsync<IEnumerable<AllExpensesByCreatorIdViewModel>>("Expenses/GetAllByCreatorId");
+
+        if (responseMessage.IsSuccessStatusCode)
+        {
+            this.snackbar.Add("Expense successfully updated!", Severity.Success);
+        }
+    }
+
+    private bool FilterFunc(AllExpensesByCreatorIdViewModel payment)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        if (payment.Id.ToString().Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (payment.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        return false;
+    }
+
+    void NavigateToExpensesList()
+    {
+        this.navigationManager.NavigateTo("/doctor/expenses");
+    }
+
+    void NavigateToAddExpenses()
+    {
+        this.navigationManager.NavigateTo("/doctor/expenses/add");
+    }
+
+    async Task NavigateToEditExpense(int id)
+    {
+        this.navigationManager.NavigateTo($"/doctor/expenses/edit/{id}");
+        this.viewModel = await this.httpClient.GetFromJsonAsync<IEnumerable<AllExpensesByCreatorIdViewModel>>("Expenses/GetAllByCreatorId");
+        this.input = await this.httpClient.GetFromJsonAsync<EditExpenseInputModel>($"Expenses/Edit/{id}");
+    }
+
+    [Parameter]
+    public int Id { get; set; }
+}

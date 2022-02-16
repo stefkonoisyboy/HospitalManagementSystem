@@ -16,129 +16,156 @@
 </style>
 
 
-<MudPaper Style="background-color: lightblue; position: relative; right: 15px;" Width="260px" Class="d-inline-flex py-3" Square="true">
-    <MudNavMenu Class="mud-width-full">
-        <MudText Style="color: white;" Typo="Typo.h6" Class="px-4 text-center">Medical</MudText>
-        <MudGrid>
-            <MudItem xs="6">
-                @if (this.viewModel.ProfileImageUrl == null)
-                {
-                    <img id="profileImage" src="https://medical.san-solutions.net/img/noavatar.jpg" alt="profileImage" />
-                }
-                else
-                {
-                    <img id="profileImage" src="@this.viewModel.ProfileImageUrl" alt="profileImage" />
-                }
-            </MudItem>
-            <MudItem xs="6">
-                <strong style="font-size: 16px; position: relative; top: 15px;">@this.viewModel.FirstName @this.viewModel.LastName</strong>
-                <p style="position: relative; top: 10px;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-dot text-success" viewBox="0 0 16 16">
-                        <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z" />
-                    </svg>
-                    <strong style="position: relative; right: 10px;">@online</strong>
-                </p>
-            </MudItem>
-        </MudGrid>
-        <div style="background-color: darkslategrey;">
-            <p style="color: white">PUBLIC SITE</p>
-        </div>
-        <MudNavLink Href="/" Icon="@Icons.Filled.Home">Home</MudNavLink>
-        <MudNavLink Href="/about" Icon="@Icons.Filled.Eject">About</MudNavLink>
-        <MudNavLink Href="/blog" Icon="@Icons.Filled.PostAdd">Blog</MudNavLink>
-        <div style="background-color: darkslategrey;">
-            <p style="color: white">MAIN NAVIGATION</p>
-        </div>
-        @if (this.viewModel.Role == GlobalConstants.PatientRoleName)
-        {
-            <MudNavLink Href="/dashboard" Icon="@Icons.Filled.Dashboard">Dashboard</MudNavLink>
-        }
-        else if (this.viewModel.Role == GlobalConstants.DoctorRoleName)
-        {
-            <MudNavLink Href="/dashboard/doctor" Icon="@Icons.Filled.Dashboard">Dashboard</MudNavLink>
-        }
-        <MudNavLink Href="/mailbox" Icon="@Icons.Filled.Email">
-            Mailbox
-            <span class="badge bg-danger">@this.unseenMessages</span>
-        </MudNavLink>
-        @if (this.viewModel.Role == GlobalConstants.PatientRoleName)
-        {
-            <MudNavLink Href="/appointments" Icon="@Icons.Filled.CalendarToday">
-                Appointments
-                <span class="badge bg-primary">@this.appointmentCounts.FinishedAppointments</span>
-            </MudNavLink>
-        }
-        else if (this.viewModel.Role == GlobalConstants.DoctorRoleName)
-        {
-            <MudNavLink Href="/appointments/doctor" Icon="@Icons.Filled.CalendarToday">
-                Appointments
-                <span class="badge bg-primary">@this.appointmentCounts.FinishedAppointments</span>
-            </MudNavLink>
-        }
-        @if (this.viewModel.Role == GlobalConstants.DoctorRoleName)
-        {
-            <MudNavLink Href="/doctor/sms" Icon="@Icons.Filled.PhoneAndroid">
-                SMS Notifications
-            </MudNavLink>
-        }
-        <MudNavGroup Title="Patients" Icon="@Icons.Filled.People">
-            <MudNavLink Href="/doctors">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-circle" viewBox="0 0 16 16">
-                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+@*<MudPaper Style="background-color: lightblue; position: relative; right: 15px;" Width="260px" Class="d-inline-flex py-3" Square="true">
+    
+</MudPaper>
+<div style="background-color: lightblue; height: 310px; width: 260px; position: relative; right: 15px;">
+</div>*@
+
+<MudNavMenu Style="background-color: lightblue" Class="mud-width-full">
+    <MudText Style="color: white;" Typo="Typo.h6" Class="px-4 text-center">Medical</MudText>
+    <MudGrid>
+        <MudItem xs="6">
+            @if (this.viewModel.ProfileImageUrl == null)
+            {
+                <img id="profileImage" src="https://medical.san-solutions.net/img/noavatar.jpg" alt="profileImage" />
+            }
+            else
+            {
+                <img id="profileImage" src="@this.viewModel.ProfileImageUrl" alt="profileImage" />
+            }
+        </MudItem>
+        <MudItem xs="6">
+            <strong style="font-size: 16px; position: relative; top: 15px;">@this.viewModel.FirstName @this.viewModel.LastName</strong>
+            <p style="position: relative; top: 10px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-dot text-success" viewBox="0 0 16 16">
+                    <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z" />
                 </svg>
-                Doctors List
-            </MudNavLink>
-            <MudNavLink Href="/payments">
+                <strong style="position: relative; right: 10px;">@online</strong>
+            </p>
+        </MudItem>
+    </MudGrid>
+    <div style="background-color: darkslategrey;">
+        <p style="color: white">PUBLIC SITE</p>
+    </div>
+    <MudNavLink Href="/" Icon="@Icons.Filled.Home">Home</MudNavLink>
+    <MudNavLink Href="/about" Icon="@Icons.Filled.Eject">About</MudNavLink>
+    <MudNavLink Href="/blog" Icon="@Icons.Filled.PostAdd">Blog</MudNavLink>
+    <div style="background-color: darkslategrey;">
+        <p style="color: white">MAIN NAVIGATION</p>
+    </div>
+    @if (this.viewModel.Role == GlobalConstants.PatientRoleName)
+    {
+        <MudNavLink Href="/dashboard" Icon="@Icons.Filled.Dashboard">Dashboard</MudNavLink>
+    }
+    else if (this.viewModel.Role == GlobalConstants.DoctorRoleName)
+    {
+        <MudNavLink Href="/dashboard/doctor" Icon="@Icons.Filled.Dashboard">Dashboard</MudNavLink>
+    }
+    <MudNavLink Href="/mailbox" Icon="@Icons.Filled.Email">
+        Mailbox
+        <span class="badge bg-danger">@this.unseenMessages</span>
+    </MudNavLink>
+    @if (this.viewModel.Role == GlobalConstants.PatientRoleName)
+    {
+        <MudNavLink Href="/appointments" Icon="@Icons.Filled.CalendarToday">
+            Appointments
+            <span class="badge bg-primary">@this.appointmentCounts.FinishedAppointments</span>
+        </MudNavLink>
+    }
+    else if (this.viewModel.Role == GlobalConstants.DoctorRoleName)
+    {
+        <MudNavLink Href="/appointments/doctor" Icon="@Icons.Filled.CalendarToday">
+            Appointments
+            <span class="badge bg-primary">@this.appointmentCounts.FinishedAppointments</span>
+        </MudNavLink>
+    }
+    @if (this.viewModel.Role == GlobalConstants.DoctorRoleName)
+    {
+        <MudNavLink Href="/doctor/sms" Icon="@Icons.Filled.PhoneAndroid">
+            SMS Notifications
+        </MudNavLink>
+    }
+    @if (this.viewModel.Role == GlobalConstants.DoctorRoleName)
+    {
+        <MudNavGroup Title="Finances" Icon="@Icons.Filled.Money">
+            <MudNavLink Href="/doctor/payments">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-circle" viewBox="0 0 16 16">
                     <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
                 </svg>
                 Payments
             </MudNavLink>
-            <MudNavLink Href="/treatments">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-circle" viewBox="0 0 16 16">
-                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
-                </svg>
-                Treatments
-            </MudNavLink>
-            <MudNavLink Href="/recipes">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-circle" viewBox="0 0 16 16">
-                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
-                </svg>
-                Recipes
-            </MudNavLink>
-            <MudNavLink Href="/documentations">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-circle" viewBox="0 0 16 16">
-                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
-                </svg>
-                Documents
-            </MudNavLink>
+            <MudNavGroup Title="Expenses" Icon="@Icons.Filled.Circle">
+                <MudNavLink Href="/doctor/expenses">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-circle" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                    </svg>
+                    Expenses List
+                </MudNavLink>
+                <MudNavLink Href="/doctor/expenses/add">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-circle" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                    </svg>
+                    Add Expense
+                </MudNavLink>
+            </MudNavGroup>
         </MudNavGroup>
-        <MudNavGroup Title="Hospital Options" Icon="@Icons.Filled.LocalHospital">
-            <MudNavLink Href="/beds">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-circle" viewBox="0 0 16 16">
-                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
-                </svg>
-                Bed Assignment
-            </MudNavLink>
-            <MudNavLink Href="/blood">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-circle" viewBox="0 0 16 16">
-                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
-                </svg>
-                Blood Bank
-            </MudNavLink>
-        </MudNavGroup>
-        <MudNavGroup Title="Medicine" Icon="@Icons.Filled.MedicalServices">
-            <MudNavLink Href="/medicines">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-circle" viewBox="0 0 16 16">
-                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
-                </svg>
-                Medicine List
-            </MudNavLink>
-        </MudNavGroup>
-    </MudNavMenu>
-</MudPaper>
-<div style="background-color: lightblue; height: 310px; width: 260px; position: relative; right: 15px;">
-</div>
+    }
+    <MudNavGroup Title="Doctors" Icon="@Icons.Filled.People">
+        <MudNavLink Href="/doctors">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-circle" viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+            </svg>
+            Doctors List
+        </MudNavLink>
+        <MudNavLink Href="/payments">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-circle" viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+            </svg>
+            Payments
+        </MudNavLink>
+        <MudNavLink Href="/treatments">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-circle" viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+            </svg>
+            Treatments
+        </MudNavLink>
+        <MudNavLink Href="/recipes">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-circle" viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+            </svg>
+            Recipes
+        </MudNavLink>
+        <MudNavLink Href="/documentations">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-circle" viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+            </svg>
+            Documents
+        </MudNavLink>
+    </MudNavGroup>
+    <MudNavGroup Title="Hospital Options" Icon="@Icons.Filled.LocalHospital">
+        <MudNavLink Href="/beds">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-circle" viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+            </svg>
+            Bed Assignment
+        </MudNavLink>
+        <MudNavLink Href="/blood">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-circle" viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+            </svg>
+            Blood Bank
+        </MudNavLink>
+    </MudNavGroup>
+    <MudNavGroup Title="Medicine" Icon="@Icons.Filled.MedicalServices">
+        <MudNavLink Href="/medicines">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-circle" viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+            </svg>
+            Medicine List
+        </MudNavLink>
+    </MudNavGroup>
+</MudNavMenu>
 
 @code {
     private CurrentUserNavMenuViewModel viewModel = new CurrentUserNavMenuViewModel();

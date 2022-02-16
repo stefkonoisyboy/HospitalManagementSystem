@@ -29,6 +29,15 @@ namespace HospitalManagementSystem.Server.Controllers
             return this.Ok(viewModel);
         }
 
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<AllPaymentsByDoctorIdViewModel>>> GetAllByDoctorId()
+        {
+            string userId = this.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            IEnumerable<AllPaymentsByDoctorIdViewModel> viewModel = await this.paymentsService.GetAllPaymentsByDoctorIdAsync(userId);
+
+            return this.Ok(viewModel);
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<PaymentByIdViewModel>> Details(int id)
         {

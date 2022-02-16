@@ -19,6 +19,23 @@ namespace HospitalManagementSystem.Server.Services
             this.dbContext = dbContext;
         }
 
+        public async Task<IEnumerable<AllPaymentsByDoctorIdViewModel>> GetAllPaymentsByDoctorIdAsync(string doctorId)
+        {
+            return await this.dbContext.Payments
+               .Where(p => p.DoctorId == doctorId)
+               .OrderBy(p => p.Id)
+               .Select(p => new AllPaymentsByDoctorIdViewModel
+               {
+                   Id = p.Id,
+                   Date = p.Date,
+                   Doctor = p.Doctor.FirstName + ' ' + p.Doctor.LastName,
+                   Patient = p.Patient.FirstName + ' ' + p.Patient.LastName,
+                   Title = p.Title,
+                   Status = p.Status.ToString(),
+               })
+               .ToListAsync();
+        }
+
         public async Task<IEnumerable<AllPaymentsByUserIdViewModel>> GetAllPaymentsByUserIdAsync(string userId)
         {
             return await this.dbContext.Payments

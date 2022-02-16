@@ -10,6 +10,8 @@ namespace HospitalManagementSystem.Server.Services.Interfaces
     {
         Task<IEnumerable<AllPaymentsByUserIdViewModel>> GetAllPaymentsByUserIdAsync(string userId);
 
+        Task<IEnumerable<AllPaymentsByDoctorIdViewModel>> GetAllPaymentsByDoctorIdAsync(string doctorId);
+
         Task<PaymentByIdViewModel> GetPaymentByIdAsync(int id);
     }
 }
